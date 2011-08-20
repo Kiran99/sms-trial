@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="one_line_text">
+    	<item name="android:singleLine">true</item>
+    	<item name="android:ellipsize">end</item>
+    </style>
+</resources>

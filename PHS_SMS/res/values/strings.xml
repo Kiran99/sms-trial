@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, ShowInbox!</string>
+    <string name="app_name">SMSTrial</string>
+    <string name="all_messages">All messages</string>
+    <string name="please_wait">Please wait...</string>
+</resources>
