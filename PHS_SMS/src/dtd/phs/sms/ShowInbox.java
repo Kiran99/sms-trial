@@ -8,30 +8,28 @@ import dtd.phs.sms.data.DataWrapper;
 import dtd.phs.sms.data.IDataGetter;
 import dtd.phs.sms.data.IListFactory;
 import dtd.phs.sms.data.SummariesListFactory;
-import dtd.phs.sms.data.entities.SummariesList;
 
 public class ShowInbox 
 	extends PHS_SMSActivity
 	implements IDataGetter
 {
-    private SummariesList summaries = new SummariesList();
 	private BaseAdapter adapter;
 	private ListView listview;
-	private IListFactory factory;
+	private IListFactory adapterFactory;
 
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.inbox);        
-        factory = new SummariesListFactory();
+        adapterFactory = new SummariesListFactory();
         bindViews();
         loadData();
     }
 
 
 	private void bindViews() {
-		
+		listview = (ListView) findViewById(R.id.list);
 	}
 
 	/**
@@ -51,9 +49,9 @@ public class ShowInbox
 	@Override
 	public void onGetDataSuccess(DataWrapper wrapper) {		
 		
-		adapter = factory.createAdapter( wrapper.getData() );
+		adapter = adapterFactory.createAdapter( wrapper.getData() );
 		listview.setAdapter( adapter );
-		listview.setOnItemClickListener( factory.createOnItemClickListener(wrapper.getData()) );
+		listview.setOnItemClickListener( adapterFactory.createOnItemClickListener(wrapper.getData()) );
 	}
 
 	

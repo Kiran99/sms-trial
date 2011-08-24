@@ -72,7 +72,7 @@ public class SummariesAdapter extends BaseAdapter {
 		updateAvatar(position, holder);		
 		holder.tvContact.setText(summaries.getContactName(position) + "(" + summaries.getMessagesCount(position) + ")");
 		holder.tvTime.setText(summaries.getLatestTime(position));
-		holder.tvShortDesc.setText(summaries.getLatestActionMessage());
+		holder.tvShortDesc.setText(summaries.getLatestActionMessage(position));
 	}
 
 	private void updateAvatar(int position, Holder holder) {

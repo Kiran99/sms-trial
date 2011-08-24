@@ -8,32 +8,37 @@ public class SummariesList extends ArrayList<SummaryItem> {
 	private static final long serialVersionUID = -4053587841265625274L;
 
 	public Uri getAvatarURI(int position) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.get(position).getAvatarURI();
 	}
 
 	public String getContactName(int position) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.get(position).getContactName();	
 	}
 
 	public int getMessagesCount(int position) {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.get(position).getMessagesCount();
 	}
 
 	public String getLatestTime(int position) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.get(position).getLatestTime();
 	}
 
 	/**
 	 * 
 	 * @return latest message OR draft
 	 */
-	public CharSequence getLatestActionMessage() {
-		// TODO Auto-generated method stub
-		return null;
+	public String getLatestActionMessage(int position) {
+		return this.get(position).getLatestActionMessage();	
+	}
+
+	/**
+	 * 
+	 * @param messages precondition: messages must be sorted by ThreadId
+	 * @return list of message summaries
+	 */
+	public static SummariesList createFrom(SMSList messages) {
+		SummariesList list = new SummariesList();
+		return list;
 	}
 
 }
