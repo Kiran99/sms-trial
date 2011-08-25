@@ -76,12 +76,13 @@ public class SummariesAdapter extends BaseAdapter {
 	}
 
 	private void updateAvatar(int position, Holder holder) {
-		Uri uri = summaries.getAvatarURI(position);
-		if ( uri != null ) {
-			holder.ivAvatar.setImageURI(uri);
-		} else {
-			holder.ivAvatar.setImageResource(STUB_AVATAR);
-		}
+		holder.ivAvatar.setImageBitmap(summaries.getAvatarBitmap(position));
+//		Uri uri = summaries.getAvatarURI(position);
+//		if ( uri != null ) {
+//			holder.ivAvatar.setImageURI(uri);
+//		} else {
+//			holder.ivAvatar.setImageResource(STUB_AVATAR);
+//		}
 	}
 
 }

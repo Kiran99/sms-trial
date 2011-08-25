@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
+import android.graphics.Bitmap;
 import android.net.Uri;
 
 public class SummariesList extends ArrayList<SummaryItem> {
@@ -11,6 +12,10 @@ public class SummariesList extends ArrayList<SummaryItem> {
 
 	public Uri getAvatarURI(int position) {
 		return this.get(position).getAvatarURI();
+	}
+	
+	public Bitmap getAvatarBitmap(int position) {
+		return this.get(position).getContactPhoto();
 	}
 
 	public String getContactName(int position) {

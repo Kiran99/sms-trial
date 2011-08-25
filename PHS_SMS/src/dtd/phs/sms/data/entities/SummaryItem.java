@@ -6,9 +6,12 @@ import java.util.Comparator;
 
 import android.content.ContentUris;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
+import dtd.phs.sms.R;
 import dtd.phs.sms.global.ApplicationContext;
 
 public class SummaryItem {
@@ -26,6 +29,8 @@ public class SummaryItem {
 
 	private static final String UNKNOWN = "Unknown";
 	private static final long UNKNOWN_PERSON_ID = -1L;
+	private static Bitmap STUB_CONTACT_BITMAP = null;
+	private static final int STUB_CONTACT_RES_ID = R.drawable.icon;
 
 	private Uri avatarURI;
 	private String contactName;
@@ -50,14 +55,26 @@ public class SummaryItem {
 	}
 	
 
-	public InputStream getPhotoStream(long personId) {
-		
+	public InputStream getContactPhotoStream() {
 		Context context = ApplicationContext.getInstance(null);
 		Uri contactUri = ContentUris.withAppendedId(Contacts.CONTENT_URI, personId);
-		Uri photoUri = Uri.withAppendedPath(context.getContentResolver(), contactUri)
-		ContactsContract.Contacts.openContactPhotoInputStream(ApplicationContext.getInstance(null).getContentResolver(), URIUtils.)
-
+		try {
+			return ContactsContract.Contacts.openContactPhotoInputStream(context.getContentResolver(), contactUri);
+		} catch (Exception e) {
+			return null;
+		}
 	}
+	public Bitmap getContactPhoto() {
+		InputStream is = getContactPhotoStream();
+		if (is == null) {
+			if (STUB_CONTACT_BITMAP == null) 
+				STUB_CONTACT_BITMAP = BitmapFactory.decodeResource(ApplicationContext.getInstance(null).getResources(), STUB_CONTACT_RES_ID);
+			return STUB_CONTACT_BITMAP;
+		} else {
+			return BitmapFactory.decodeStream(is);
+		}
+	}
+	
 	private long getPersonId(SMSList smsList) {
 		for(SMSItem sms : smsList) {
 			if ( sms.getPersonId() > 0 ) {
