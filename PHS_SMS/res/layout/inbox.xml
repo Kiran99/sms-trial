@@ -31,15 +31,15 @@
 	  	android:layout_height="fill_parent"
 	  	android:layout_width="fill_parent"
   >
-	  <ListView
-	  	android:id="@+id/list"
-	  	android:layout_height="fill_parent"
-	  	android:layout_width="fill_parent" 
-	  />
 	  <include 
 	  	layout="@layout/waiting_frame"
 	  	android:layout_width="fill_parent" 
 	  	android:layout_height="fill_parent"
+	  />
+	  <ListView
+	  	android:id="@+id/list"
+	  	android:layout_height="fill_parent"
+	  	android:layout_width="fill_parent" 
 	  />
   </FrameLayout>
 </LinearLayout>

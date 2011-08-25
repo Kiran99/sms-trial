@@ -1,7 +1,9 @@
 package dtd.phs.sms;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import dtd.phs.sms.data.DataCenter;
 import dtd.phs.sms.data.DataWrapper;
@@ -13,9 +15,12 @@ public class ShowInbox
 	extends PHS_SMSActivity
 	implements IDataGetter
 {
+	private static final int WAITING_FRAME = 0;
+	private static final int DATA_FRAME = 1;
 	private BaseAdapter adapter;
 	private ListView listview;
 	private IListFactory adapterFactory;
+	private FrameLayout mainFrames;
 
 	/** Called when the activity is first created. */
     @Override
@@ -30,7 +35,18 @@ public class ShowInbox
 
 	private void bindViews() {
 		listview = (ListView) findViewById(R.id.list);
+		mainFrames = (FrameLayout) findViewById(R.id.main_frames);
+		showOnlyView(WAITING_FRAME);
 	}
+
+	private void showOnlyView(int id) {
+		for(int i = 0 ; i < mainFrames.getChildCount() ; i++) {
+			if ( i == id ) 
+				mainFrames.getChildAt(i).setVisibility(View.VISIBLE);
+			else mainFrames.getChildAt(i).setVisibility(View.INVISIBLE);
+		}
+	}
+
 
 	/**
 	 * Load all summary:
@@ -48,10 +64,10 @@ public class ShowInbox
 
 	@Override
 	public void onGetDataSuccess(DataWrapper wrapper) {		
-		
 		adapter = adapterFactory.createAdapter( wrapper.getData() );
 		listview.setAdapter( adapter );
 		listview.setOnItemClickListener( adapterFactory.createOnItemClickListener(wrapper.getData()) );
+		showOnlyView(DATA_FRAME);
 	}
 
 	
