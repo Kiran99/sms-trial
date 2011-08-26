@@ -72,7 +72,6 @@ public class SummaryItem {
 
 
 //	private void debugInfo() {
-//		//TODO: tidy up here !
 //		if ( toBeShowID() ) {
 //			Context context = ApplicationContext.getInstance(null);
 //			ContentResolver contentResolver = context.getContentResolver();
