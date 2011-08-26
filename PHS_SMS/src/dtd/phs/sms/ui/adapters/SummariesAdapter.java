@@ -1,6 +1,7 @@
 package dtd.phs.sms.ui.adapters;
 
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -8,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import dtd.phs.sms.R;
 import dtd.phs.sms.data.entities.SummariesList;
+import dtd.phs.sms.global.ApplicationContext;
 import dtd.phs.sms.util.Helpers;
 
 public class SummariesAdapter extends BaseAdapter {
@@ -15,13 +17,16 @@ public class SummariesAdapter extends BaseAdapter {
 
 
 	private static final int ITEM_LAYOUT = R.layout.inbox_item;
-
-	private static final int STUB_AVATAR = R.drawable.icon;
+	static final int STUB_AVATAR = R.drawable.icon;
+	static Bitmap STUB_AVATAR_BITMAP = null;
 	
 	private SummariesList summaries;
 
+	private ContactLoader contactsLoader;
+
 	public SummariesAdapter(SummariesList summaries) {
 		this.summaries = summaries;
+		contactsLoader = new ContactLoader();
 	}
 
 	@Override
@@ -69,20 +74,36 @@ public class SummariesAdapter extends BaseAdapter {
 	}
 
 	private void updateHolder(int position, Holder holder) {
-		updateAvatar(position, holder);		
-		holder.tvContact.setText(summaries.getContactName(position) + "(" + summaries.getMessagesCount(position) + ")");
+		updateAvatar(position, holder);	
+		updateContactName(position, holder);
+		String contactId = summaries.getContactId(position);
+		if ( contactId != null )
+			contactsLoader.loadContact(holder.tvContact, holder.ivAvatar, contactId);
+
 		holder.tvTime.setText(summaries.getLatestTime(position));
 		holder.tvShortDesc.setText(summaries.getLatestActionMessage(position));
 	}
 
+	private void updateContactName(int position, Holder holder) {
+		holder.tvContact.setText(summaries.getContactNumber(position) + "(" + summaries.getMessagesCount(position) + ")");
+	}
+
 	private void updateAvatar(int position, Holder holder) {
-		holder.ivAvatar.setImageBitmap(summaries.getAvatarBitmap(position));
+		if (STUB_AVATAR_BITMAP == null) {
+			STUB_AVATAR_BITMAP = BitmapFactory.decodeResource(ApplicationContext.getInstance(null).getResources(), STUB_AVATAR);
+		}
+		holder.ivAvatar.setImageBitmap(STUB_AVATAR_BITMAP);
 //		Uri uri = summaries.getAvatarURI(position);
 //		if ( uri != null ) {
 //			holder.ivAvatar.setImageURI(uri);
 //		} else {
 //			holder.ivAvatar.setImageResource(STUB_AVATAR);
 //		}
+	}
+	
+	public void stopLoadContacts() {
+		contactsLoader.stopThread();		
+		STUB_AVATAR_BITMAP = null;
 	}
 
 }

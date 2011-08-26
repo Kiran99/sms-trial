@@ -1,24 +1,17 @@
 package dtd.phs.sms.data.entities;
 
-import java.io.InputStream;
 import java.sql.Date;
 import java.util.Comparator;
-import java.util.HashMap;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
-import android.provider.ContactsContract.PhoneLookup;
 import android.provider.ContactsContract.RawContacts;
-import dtd.phs.sms.R;
 import dtd.phs.sms.global.ApplicationContext;
-import dtd.phs.sms.util.Logger;
 
 public class SummaryItem {
 
@@ -35,51 +28,38 @@ public class SummaryItem {
 
 	private static final String UNKNOWN = "Unknown";
 	private static final long UNKNOWN_PERSON_ID = -1L;
-	private static Bitmap STUB_CONTACT_BITMAP = null;
-	private static final int STUB_CONTACT_RES_ID = R.drawable.icon;
+//	private static Bitmap STUB_CONTACT_BITMAP = null;
+//	private static final int STUB_CONTACT_RES_ID = R.drawable.icon;
 
 	private Uri avatarURI;
-	private String contactName;
 	private int messagesCount;
 	private String latestTime;
 	private String latestActionMessage;
 	private long latestTimeMillis;
 	private long personId;
+	private String contactId;
 	private String contactNumber;
 
 	public SummaryItem(SMSList smsList) {
 		//TODO: fill the fields
 		//TODO: better performance : sort the SMSList according to time (by the time creating map)
 		//TODO: better performance : just run one for loop, and check everything else in that loop
-		this.avatarURI = null;
+
 
 		this.personId = getPerson(smsList);
-		//TODO: tidy up here !
-		if ( toBeShowID() ) {
-			Context context = ApplicationContext.getInstance(null);
-			ContentResolver contentResolver = context.getContentResolver();
-			Cursor cursor = contentResolver.query(ContentUris.withAppendedId(RawContacts.CONTENT_URI,personId), null, null, null, null);
-			if ( cursor.moveToFirst() ){
-				String[] columnNames = cursor.getColumnNames();			
-				HashMap<String, String> contactValues = new HashMap<String, String>();
-				for(String cname : columnNames ) {
-					try {
-						contactValues.put(cname, cursor.getString(cursor.getColumnIndex(cname)));
-					} catch (Exception e) {
-						Logger.logException(e);
-					}
-				}
 
-				Logger.logInfo("ID = "+ personId + " -- " + contactValues.toString());	
+		if ( personId > 0 )
+			this.contactId = getContactID(personId);
 
-			}
-			cursor.close();
+		if ( contactId != null ) {
+			Uri contactURI = Uri.withAppendedPath(Contacts.CONTENT_URI, contactId);
+			this.avatarURI = Uri.withAppendedPath(contactURI, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
 		}
+		
 
+//		debugInfo();
 
-		this.contactName = getAContact(smsList);
 		this.contactNumber = getNumber(smsList);
-
 
 		this.messagesCount = smsList.size();
 
@@ -91,31 +71,44 @@ public class SummaryItem {
 	}
 
 
-	static final long[] TO_BE_SHOWNED_ID = {441,448,226};  
-	private boolean toBeShowID() {
-		for(long ID : TO_BE_SHOWNED_ID) {
-			if (personId == ID) return true;
-		}
-		return false;
-	}
+//	private void debugInfo() {
+//		//TODO: tidy up here !
+//		if ( toBeShowID() ) {
+//			Context context = ApplicationContext.getInstance(null);
+//			ContentResolver contentResolver = context.getContentResolver();
+//			Cursor cursor = contentResolver.query(Uri.withAppendedPath(Contacts.CONTENT_URI,contactId), null, null, null, null);
+//			if ( cursor.moveToFirst() ){
+//				String[] columnNames = cursor.getColumnNames();			
+//				HashMap<String, String> contactValues = new HashMap<String, String>();
+//				for(String cname : columnNames ) {
+//					try {
+//						contactValues.put(cname, cursor.getString(cursor.getColumnIndex(cname)));
+//					} catch (Exception e) {
+//						Logger.logException(e);
+//					}
+//				}
+//
+//				Logger.logInfo("ID = "+ personId + " -- " + contactValues.toString());	
+//
+//			}
+//			cursor.close();
+//		}
+//	}
 
 
-	public InputStream getContactPhotoStream() {
-		Context context = ApplicationContext.getInstance(null);
-		if (personId > 0 ) {
-			String contactId = getContactID();
-			Uri contactURI = Uri.withAppendedPath(Contacts.CONTENT_URI,contactId);
-			try {
-				return ContactsContract.Contacts.openContactPhotoInputStream(context.getContentResolver(), contactURI);
-			} catch (Exception e) {
-				Logger.logException(e);
-				return null;
-			}
-		} else return null;
-	}
+//	static final long[] TO_BE_SHOWNED_ID = {441,448,226};  
+//	private boolean toBeShowID() {
+//		for(long ID : TO_BE_SHOWNED_ID) {
+//			if (personId == ID) return true;
+//		}
+//		return false;
+//	}
 
 
-	private String getContactID() {
+
+
+
+	private String getContactID(long personId) {
 		Context context = ApplicationContext.getInstance(null);
 		ContentResolver cr = context.getContentResolver();
 		Uri personUri = ContentUris.withAppendedId(RawContacts.CONTENT_URI,personId);
@@ -124,17 +117,68 @@ public class SummaryItem {
 		String contactId = cursor.getString(cursor.getColumnIndex(RawContacts.CONTACT_ID));
 		return contactId;
 	}
-	
-	public Bitmap getContactPhoto() {
-		InputStream is = getContactPhotoStream();
-		if (is == null) {
-			if (STUB_CONTACT_BITMAP == null) 
-				STUB_CONTACT_BITMAP = BitmapFactory.decodeResource(ApplicationContext.getInstance(null).getResources(), STUB_CONTACT_RES_ID);
-			return STUB_CONTACT_BITMAP;
-		} else {
-			return BitmapFactory.decodeStream(is);
-		}
-	}
+
+//	public InputStream getContactPhotoStream() {
+//		Context context = ApplicationContext.getInstance(null);
+//		if ( toBeShowID() ) {
+//			personId++;
+//			personId--;
+//		}
+//		if (personId > 0 ) {
+//			String contactId = this.contactId;
+//			Uri contactURI = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI,contactId);
+//			try {
+//				return ContactsContract.Contacts.openContactPhotoInputStream(context.getContentResolver(), contactURI);
+//			} catch (Exception e) {
+//				Logger.logException(e);
+//				return null;
+//			}
+//		} else return null;
+//	}
+//	public Bitmap getContactPhoto() {
+//		InputStream is = getContactPhotoStream();
+//
+//		if (is == null) {
+//			if (STUB_CONTACT_BITMAP == null) 
+//				STUB_CONTACT_BITMAP = BitmapFactory.decodeResource(ApplicationContext.getInstance(null).getResources(), STUB_CONTACT_RES_ID);
+//			return STUB_CONTACT_BITMAP;
+//		} else {
+//			return BitmapFactory.decodeStream(is);
+//		}
+//	}
+
+//	private Bitmap getContactBitmapByPhotoID() {
+//		Cursor cursor  = null;
+//		try {
+//			ContentResolver contentResolver = ApplicationContext.getInstance(null).getContentResolver();
+//			cursor = contentResolver.query(
+//					Uri.withAppendedPath(Contacts.CONTENT_URI, contactId), 
+//					new String[] {Contacts.PHOTO_ID}, 
+//					null,null,null);
+//
+//			if ( cursor.moveToFirst() ) {
+//				String photoId = cursor.getString(0);
+//				cursor.close();
+//				cursor = null;
+//				if ( photoId == null ) return null; 
+//				Uri photoDataUri = Uri.withAppendedPath(Data.CONTENT_URI, photoId);
+//				cursor = contentResolver.query(photoDataUri,null,null,null,null);
+//				if ( cursor.moveToFirst() ) {
+//					byte[] photoBlob = cursor.getBlob(cursor.getColumnIndex(Contacts.Photo.DATA15));
+//					return BitmapFactory.decodeByteArray(photoBlob, 0, photoBlob.length);
+//				}
+//				if ( cursor != null)
+//					cursor.close();
+//				return null;
+//			} else return null;
+//		} catch (Exception e) {
+//			return null;
+//		} finally {
+//			if ( cursor != null )
+//				cursor.close();
+//		}
+//	}
+
 
 	private long getPerson(SMSList smsList) {
 		for(SMSItem sms : smsList) {
@@ -161,20 +205,16 @@ public class SummaryItem {
 		return latestSMS;
 	}
 
-	private String getAContact(SMSList smsList) {
-		for(SMSItem sms : smsList) {
-			String name = sms.getAddress() + "::ID= " + personId;
-			if ( name != null ) return name;
-		}
-		return UNKNOWN;
-	}
-
 	private String getNumber(SMSList smsList) {
 		for(SMSItem sms : smsList) {
 			String name = sms.getAddress();
 			if ( name != null ) return name;
 		}
 		return UNKNOWN;
+	}
+	
+	public String getContactNumber() {
+		return this.contactNumber;
 	}
 
 	public long getLatestTimeMillis() {
@@ -187,10 +227,6 @@ public class SummaryItem {
 
 	public void setAvatarURI(Uri avatarURI) {
 		this.avatarURI = avatarURI;
-	}
-
-	public void setContactName(String contactName) {
-		this.contactName = contactName;
 	}
 
 	public void setMessagesCount(int messagesCount) {
@@ -212,10 +248,6 @@ public class SummaryItem {
 		return latestTimeMillis;
 	}
 
-	public String getContactName() {
-		return contactName;
-	}
-
 	public int getMessagesCount() {
 		return messagesCount;
 	}
@@ -226,6 +258,11 @@ public class SummaryItem {
 
 	public String getLatestActionMessage() {
 		return latestActionMessage;
+	}
+
+
+	public String getContactId() {
+		return contactId;
 	}
 
 }

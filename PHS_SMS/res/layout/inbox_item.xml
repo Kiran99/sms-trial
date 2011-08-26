@@ -15,6 +15,7 @@
 			 android:layout_height="48dp"
 			 android:layout_gravity="center_vertical"
 			 android:src="@drawable/icon"
+			 android:scaleType="fitXY"
 		/>	
 		<LinearLayout
 			android:orientation="vertical"

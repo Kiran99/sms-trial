@@ -1,11 +1,6 @@
 package dtd.phs.sms.data.entities;
 
-import org.apache.http.client.utils.URIUtils;
-
-import dtd.phs.sms.global.ApplicationContext;
 import android.database.Cursor;
-import android.net.Uri;
-import android.provider.ContactsContract;
 
 public class SMSItem {
 	/**
