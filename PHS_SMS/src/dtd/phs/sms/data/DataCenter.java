@@ -1,9 +1,5 @@
 package dtd.phs.sms.data;
 
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import dtd.phs.sms.global.ApplicationContext;
 import dtd.phs.sms.global.ThreadPools;
 
 

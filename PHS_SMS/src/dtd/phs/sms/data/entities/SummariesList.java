@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
+import dtd.phs.sms.util.Logger;
+
 import android.graphics.Bitmap;
 import android.net.Uri;
 
@@ -81,6 +83,7 @@ public class SummariesList extends ArrayList<SummaryItem> {
 	}
 
 	private static void sortByTime(SummariesList summaries) {
+		Logger.logInfo(" summaries is sort !");
 		Collections.sort(summaries, new SummaryItem.TimeComparator());
 	}
 
