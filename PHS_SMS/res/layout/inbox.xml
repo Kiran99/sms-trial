@@ -11,6 +11,14 @@
   	android:layout_height="wrap_content"
   	android:orientation="horizontal"
   >
+  	<ImageButton
+  		android:id="@+id/btSearch"
+  		android:layout_width="wrap_content"
+  		android:layout_height="wrap_content"
+  		android:src="@drawable/icon"
+  		android:background="#00112233"
+  	>
+  	</ImageButton>
   	<TextView
   		android:layout_width="100dp"
   		android:layout_weight="1"

@@ -73,7 +73,8 @@ public class ShowInbox
 	
 	@Override
 	protected void onStop() {
-		((SummariesAdapter)adapter).stopLoadContacts();
+		if ( adapter != null )
+			((SummariesAdapter)adapter).stopLoadContacts();
 		super.onStop();
 	}
 

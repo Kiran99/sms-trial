@@ -102,7 +102,8 @@ public class SummariesAdapter extends BaseAdapter {
 	}
 	
 	public void stopLoadContacts() {
-		contactsLoader.stopThread();		
+		if ( contactsLoader != null )
+			contactsLoader.stopThread();		
 		STUB_AVATAR_BITMAP = null;
 	}
 

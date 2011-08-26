@@ -12,6 +12,7 @@ import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.RawContacts;
 import dtd.phs.sms.global.ApplicationContext;
+import dtd.phs.sms.util.Logger;
 
 public class SummaryItem {
 
@@ -28,8 +29,8 @@ public class SummaryItem {
 
 	private static final String UNKNOWN = "Unknown";
 	private static final long UNKNOWN_PERSON_ID = -1L;
-//	private static Bitmap STUB_CONTACT_BITMAP = null;
-//	private static final int STUB_CONTACT_RES_ID = R.drawable.icon;
+	//	private static Bitmap STUB_CONTACT_BITMAP = null;
+	//	private static final int STUB_CONTACT_RES_ID = R.drawable.icon;
 
 	private Uri avatarURI;
 	private int messagesCount;
@@ -55,9 +56,9 @@ public class SummaryItem {
 			Uri contactURI = Uri.withAppendedPath(Contacts.CONTENT_URI, contactId);
 			this.avatarURI = Uri.withAppendedPath(contactURI, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
 		}
-		
 
-//		debugInfo();
+
+		//		debugInfo();
 
 		this.contactNumber = getNumber(smsList);
 
@@ -71,115 +72,131 @@ public class SummaryItem {
 	}
 
 
-//	private void debugInfo() {
-//		if ( toBeShowID() ) {
-//			Context context = ApplicationContext.getInstance(null);
-//			ContentResolver contentResolver = context.getContentResolver();
-//			Cursor cursor = contentResolver.query(Uri.withAppendedPath(Contacts.CONTENT_URI,contactId), null, null, null, null);
-//			if ( cursor.moveToFirst() ){
-//				String[] columnNames = cursor.getColumnNames();			
-//				HashMap<String, String> contactValues = new HashMap<String, String>();
-//				for(String cname : columnNames ) {
-//					try {
-//						contactValues.put(cname, cursor.getString(cursor.getColumnIndex(cname)));
-//					} catch (Exception e) {
-//						Logger.logException(e);
-//					}
-//				}
-//
-//				Logger.logInfo("ID = "+ personId + " -- " + contactValues.toString());	
-//
-//			}
-//			cursor.close();
-//		}
-//	}
+	//	private void debugInfo() {
+	//		if ( toBeShowID() ) {
+	//			Context context = ApplicationContext.getInstance(null);
+	//			ContentResolver contentResolver = context.getContentResolver();
+	//			Cursor cursor = contentResolver.query(Uri.withAppendedPath(Contacts.CONTENT_URI,contactId), null, null, null, null);
+	//			if ( cursor.moveToFirst() ){
+	//				String[] columnNames = cursor.getColumnNames();			
+	//				HashMap<String, String> contactValues = new HashMap<String, String>();
+	//				for(String cname : columnNames ) {
+	//					try {
+	//						contactValues.put(cname, cursor.getString(cursor.getColumnIndex(cname)));
+	//					} catch (Exception e) {
+	//						Logger.logException(e);
+	//					}
+	//				}
+	//
+	//				Logger.logInfo("ID = "+ personId + " -- " + contactValues.toString());	
+	//
+	//			}
+	//			cursor.close();
+	//		}
+	//	}
 
 
-//	static final long[] TO_BE_SHOWNED_ID = {441,448,226};  
-//	private boolean toBeShowID() {
-//		for(long ID : TO_BE_SHOWNED_ID) {
-//			if (personId == ID) return true;
-//		}
-//		return false;
-//	}
+	//	static final long[] TO_BE_SHOWNED_ID = {441,448,226};  
+	//	private boolean toBeShowID() {
+	//		for(long ID : TO_BE_SHOWNED_ID) {
+	//			if (personId == ID) return true;
+	//		}
+	//		return false;
+	//	}
 
 
 
 
 
-	private String getContactID(long personId) {
-		Context context = ApplicationContext.getInstance(null);
-		ContentResolver cr = context.getContentResolver();
-		Uri personUri = ContentUris.withAppendedId(RawContacts.CONTENT_URI,personId);
-		Cursor cursor =  cr.query(personUri, new String[] {RawContacts.CONTACT_ID}, null, null, null);
-		cursor.moveToFirst();
-		String contactId = cursor.getString(cursor.getColumnIndex(RawContacts.CONTACT_ID));
-		return contactId;
+	static private String getContactID(long personId) {
+		if ( personId <= 0 ) return null;
+		Cursor cursor = null;
+		try { 
+			Context context = ApplicationContext.getInstance(null);
+			ContentResolver cr = context.getContentResolver();
+			Uri personUri = ContentUris.withAppendedId(RawContacts.CONTENT_URI,personId);
+			cursor =  cr.query(personUri, new String[] {RawContacts.CONTACT_ID}, null, null, null);
+			if ( cursor.moveToFirst() ) {
+				String contactId = cursor.getString(cursor.getColumnIndex(RawContacts.CONTACT_ID));
+
+				return contactId;
+			} else return null;
+		} catch (Exception e) {
+			Logger.logException(e);
+			return null;
+		} finally {
+			if ( cursor != null ) cursor.close();
+		}
 	}
 
-//	public InputStream getContactPhotoStream() {
-//		Context context = ApplicationContext.getInstance(null);
-//		if ( toBeShowID() ) {
-//			personId++;
-//			personId--;
-//		}
-//		if (personId > 0 ) {
-//			String contactId = this.contactId;
-//			Uri contactURI = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI,contactId);
-//			try {
-//				return ContactsContract.Contacts.openContactPhotoInputStream(context.getContentResolver(), contactURI);
-//			} catch (Exception e) {
-//				Logger.logException(e);
-//				return null;
-//			}
-//		} else return null;
-//	}
-//	public Bitmap getContactPhoto() {
-//		InputStream is = getContactPhotoStream();
-//
-//		if (is == null) {
-//			if (STUB_CONTACT_BITMAP == null) 
-//				STUB_CONTACT_BITMAP = BitmapFactory.decodeResource(ApplicationContext.getInstance(null).getResources(), STUB_CONTACT_RES_ID);
-//			return STUB_CONTACT_BITMAP;
-//		} else {
-//			return BitmapFactory.decodeStream(is);
-//		}
-//	}
+	static public String getContactID(SMSList smsList) {
+		long person = getPerson(smsList);
+		return getContactID(person);
+	}
 
-//	private Bitmap getContactBitmapByPhotoID() {
-//		Cursor cursor  = null;
-//		try {
-//			ContentResolver contentResolver = ApplicationContext.getInstance(null).getContentResolver();
-//			cursor = contentResolver.query(
-//					Uri.withAppendedPath(Contacts.CONTENT_URI, contactId), 
-//					new String[] {Contacts.PHOTO_ID}, 
-//					null,null,null);
-//
-//			if ( cursor.moveToFirst() ) {
-//				String photoId = cursor.getString(0);
-//				cursor.close();
-//				cursor = null;
-//				if ( photoId == null ) return null; 
-//				Uri photoDataUri = Uri.withAppendedPath(Data.CONTENT_URI, photoId);
-//				cursor = contentResolver.query(photoDataUri,null,null,null,null);
-//				if ( cursor.moveToFirst() ) {
-//					byte[] photoBlob = cursor.getBlob(cursor.getColumnIndex(Contacts.Photo.DATA15));
-//					return BitmapFactory.decodeByteArray(photoBlob, 0, photoBlob.length);
-//				}
-//				if ( cursor != null)
-//					cursor.close();
-//				return null;
-//			} else return null;
-//		} catch (Exception e) {
-//			return null;
-//		} finally {
-//			if ( cursor != null )
-//				cursor.close();
-//		}
-//	}
+	//	public InputStream getContactPhotoStream() {
+	//		Context context = ApplicationContext.getInstance(null);
+	//		if ( toBeShowID() ) {
+	//			personId++;
+	//			personId--;
+	//		}
+	//		if (personId > 0 ) {
+	//			String contactId = this.contactId;
+	//			Uri contactURI = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI,contactId);
+	//			try {
+	//				return ContactsContract.Contacts.openContactPhotoInputStream(context.getContentResolver(), contactURI);
+	//			} catch (Exception e) {
+	//				Logger.logException(e);
+	//				return null;
+	//			}
+	//		} else return null;
+	//	}
+	//	public Bitmap getContactPhoto() {
+	//		InputStream is = getContactPhotoStream();
+	//
+	//		if (is == null) {
+	//			if (STUB_CONTACT_BITMAP == null) 
+	//				STUB_CONTACT_BITMAP = BitmapFactory.decodeResource(ApplicationContext.getInstance(null).getResources(), STUB_CONTACT_RES_ID);
+	//			return STUB_CONTACT_BITMAP;
+	//		} else {
+	//			return BitmapFactory.decodeStream(is);
+	//		}
+	//	}
+
+	//	private Bitmap getContactBitmapByPhotoID() {
+	//		Cursor cursor  = null;
+	//		try {
+	//			ContentResolver contentResolver = ApplicationContext.getInstance(null).getContentResolver();
+	//			cursor = contentResolver.query(
+	//					Uri.withAppendedPath(Contacts.CONTENT_URI, contactId), 
+	//					new String[] {Contacts.PHOTO_ID}, 
+	//					null,null,null);
+	//
+	//			if ( cursor.moveToFirst() ) {
+	//				String photoId = cursor.getString(0);
+	//				cursor.close();
+	//				cursor = null;
+	//				if ( photoId == null ) return null; 
+	//				Uri photoDataUri = Uri.withAppendedPath(Data.CONTENT_URI, photoId);
+	//				cursor = contentResolver.query(photoDataUri,null,null,null,null);
+	//				if ( cursor.moveToFirst() ) {
+	//					byte[] photoBlob = cursor.getBlob(cursor.getColumnIndex(Contacts.Photo.DATA15));
+	//					return BitmapFactory.decodeByteArray(photoBlob, 0, photoBlob.length);
+	//				}
+	//				if ( cursor != null)
+	//					cursor.close();
+	//				return null;
+	//			} else return null;
+	//		} catch (Exception e) {
+	//			return null;
+	//		} finally {
+	//			if ( cursor != null )
+	//				cursor.close();
+	//		}
+	//	}
 
 
-	private long getPerson(SMSList smsList) {
+	private static long getPerson(SMSList smsList) {
 		for(SMSItem sms : smsList) {
 			if ( sms.getPerson() > 0 ) {
 				return sms.getPerson();
@@ -211,7 +228,7 @@ public class SummaryItem {
 		}
 		return UNKNOWN;
 	}
-	
+
 	public String getContactNumber() {
 		return this.contactNumber;
 	}
