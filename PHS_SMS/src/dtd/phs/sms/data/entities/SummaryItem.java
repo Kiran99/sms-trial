@@ -2,6 +2,7 @@ package dtd.phs.sms.data.entities;
 
 import java.sql.Date;
 import java.util.Comparator;
+import java.util.HashMap;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -58,7 +59,7 @@ public class SummaryItem {
 		}
 
 
-		//		debugInfo();
+		debugInfo();
 
 		this.contactNumber = getNumber(smsList);
 
@@ -72,37 +73,38 @@ public class SummaryItem {
 	}
 
 
-	//	private void debugInfo() {
-	//		if ( toBeShowID() ) {
-	//			Context context = ApplicationContext.getInstance(null);
-	//			ContentResolver contentResolver = context.getContentResolver();
-	//			Cursor cursor = contentResolver.query(Uri.withAppendedPath(Contacts.CONTENT_URI,contactId), null, null, null, null);
-	//			if ( cursor.moveToFirst() ){
-	//				String[] columnNames = cursor.getColumnNames();			
-	//				HashMap<String, String> contactValues = new HashMap<String, String>();
-	//				for(String cname : columnNames ) {
-	//					try {
-	//						contactValues.put(cname, cursor.getString(cursor.getColumnIndex(cname)));
-	//					} catch (Exception e) {
-	//						Logger.logException(e);
-	//					}
-	//				}
-	//
-	//				Logger.logInfo("ID = "+ personId + " -- " + contactValues.toString());	
-	//
-	//			}
-	//			cursor.close();
-	//		}
-	//	}
+	private void debugInfo() {
+		if ( toBeShowID() ) {
+			Context context = ApplicationContext.getInstance(null);
+			ContentResolver contentResolver = context.getContentResolver();
+			Cursor cursor = contentResolver.query(Uri.withAppendedPath(Contacts.CONTENT_URI,contactId), null, null, null, null);
+//			Cursor cursor = contentResolver.query(Uri.withAppendedPath(RawContacts.CONTENT_URI,""+personId), null, null, null, null);
+			if ( cursor.moveToFirst() ){
+				String[] columnNames = cursor.getColumnNames();			
+				HashMap<String, String> contactValues = new HashMap<String, String>();
+				for(String cname : columnNames ) {
+					try {
+						contactValues.put(cname, cursor.getString(cursor.getColumnIndex(cname)));
+					} catch (Exception e) {
+						Logger.logException(e);
+					}
+				}
+
+				Logger.logInfo("ID = "+ personId + " -- " + contactValues.toString());	
+
+			}
+			cursor.close();
+		}
+	}
 
 
-	//	static final long[] TO_BE_SHOWNED_ID = {441,448,226};  
-	//	private boolean toBeShowID() {
-	//		for(long ID : TO_BE_SHOWNED_ID) {
-	//			if (personId == ID) return true;
-	//		}
-	//		return false;
-	//	}
+	static final String[] TO_BE_SHOWNED_ID = {"218"};  
+	private boolean toBeShowID() {
+		for(String ID : TO_BE_SHOWNED_ID) {
+			if (contactId != null && contactId.equals(ID)) return true;
+		}
+		return false;
+	}
 
 
 

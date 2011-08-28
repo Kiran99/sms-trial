@@ -25,10 +25,10 @@ public class ContactLoader implements Runnable {
 
 	public ContactLoader() {
 		loadContactThread = new Thread(this);
-		loadContactThread.setPriority(Thread.NORM_PRIORITY -1);
-		loadContactThread.start();
 		cache = new HashMap<String, String>();
 		cacheAvatar = new HashMap<String, Bitmap>();
+		loadContactThread.setPriority(Thread.NORM_PRIORITY -1);
+		loadContactThread.start();
 	}
 
 	public void loadContact(TextView tvContact , ImageView ivAvatar, String contactId) {
@@ -84,7 +84,7 @@ public class ContactLoader implements Runnable {
 			if ( cursor.moveToFirst() ) {
 				contactName = cursor.getString(0);
 				cache.put(contactId, contactName);
-				return contactName;
+				return contactName + " ::ID = " + contactId;
 			} else return null;
 		} catch (Exception e) {
 			Logger.logException(e);
@@ -112,15 +112,43 @@ public class ContactLoader implements Runnable {
 
 		Bitmap avatar = cacheAvatar.get(contactId);
 		if ( avatar == null ) {
-			InputStream is = getContactPhotoStream(contactId);
-			if (is == null) {
-				avatar = SummariesAdapter.STUB_AVATAR_BITMAP;
-			} else {
-				avatar = BitmapFactory.decodeStream(is);
-			}
+			avatar = getJustPhoto(contactId);
 			cacheAvatar.put(contactId, avatar);
 		}
 		return avatar;
+	}
+
+	private Bitmap getJustPhoto(String contactId) {
+//		Bitmap avatar = null;
+//		InputStream is = getContactPhotoStream(contactId);
+//		if (is == null) {
+//			avatar = SummariesAdapter.STUB_AVATAR_BITMAP;
+//		} else {
+//			avatar = BitmapFactory.decodeStream(is);
+//		}
+//		return avatar;
+		
+		Bitmap avatar = SummariesAdapter.STUB_AVATAR_BITMAP;
+		String[] projection = {ContactsContract.CommonDataKinds.Photo.PHOTO};
+		Uri uri = ContactsContract.Data.CONTENT_URI;
+		String where = ContactsContract.Data.MIMETYPE 
+		       + "='" + ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE + "' AND " 
+		       + ContactsContract.Data.CONTACT_ID + " = " + contactId;
+		Context context = ApplicationContext.getInstance(null);
+		Cursor cursor = context.getContentResolver().query(uri, projection, where, null, null);
+		if( cursor != null && cursor.moveToFirst() ) {
+		        byte[] photoData = cursor.getBlob(0);
+		        if ( photoData != null )
+		        	avatar = BitmapFactory.decodeByteArray(photoData, 0,photoData.length, null);
+		}  
+		cursor.close();
+		return avatar;
+		
+	}
+
+	private Bitmap getBitMapByBlahMethod(String contactId) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	public class TextViewToLoad {
