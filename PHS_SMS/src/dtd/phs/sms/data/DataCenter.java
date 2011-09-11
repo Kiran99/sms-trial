@@ -29,7 +29,7 @@ public class DataCenter {
 
 	}
 
-	public static void requestMessagesForContact(int threadId, IDataGetter delegate) {
+	public static void requestMessagesForThread(int threadId, IDataGetter delegate) {
 		Request request = new GetMessagesForThreadIdRequest(threadId,delegate);
 		ThreadPools.getInstance().add(request);
 		
