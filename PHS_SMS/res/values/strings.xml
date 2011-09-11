@@ -4,4 +4,6 @@
     <string name="app_name">SMSTrial</string>
     <string name="all_messages">All messages</string>
     <string name="please_wait">Please wait...</string>
+    <string name="send">Send</string>
+    <string name="attach">Attach</string>
 </resources>

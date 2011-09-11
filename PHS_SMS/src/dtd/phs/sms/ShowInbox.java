@@ -10,7 +10,7 @@ import dtd.phs.sms.data.DataWrapper;
 import dtd.phs.sms.data.IDataGetter;
 import dtd.phs.sms.data.IListFactory;
 import dtd.phs.sms.data.SummariesListFactory;
-import dtd.phs.sms.ui.adapters.SummariesAdapter;
+import dtd.phs.sms.ui.SummariesAdapter;
 
 public class ShowInbox 
 	extends PHS_SMSActivity
@@ -67,7 +67,7 @@ public class ShowInbox
 	public void onGetDataSuccess(DataWrapper wrapper) {		
 		adapter = adapterFactory.createAdapter( wrapper.getData() );
 		listview.setAdapter( adapter );
-		listview.setOnItemClickListener( adapterFactory.createOnItemClickListener(wrapper.getData()) );
+		listview.setOnItemClickListener( adapterFactory.createOnItemClickListener(this,adapter) );
 		showOnlyView(DATA_FRAME);
 	}
 	

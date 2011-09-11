@@ -1,4 +1,4 @@
-package dtd.phs.sms.ui.adapters;
+package dtd.phs.sms.ui;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -34,6 +34,11 @@ public class SummariesAdapter extends BaseAdapter {
 		return summaries.size();
 	}
 
+	
+	public SummariesList getSummaries() {
+		return this.summaries;
+	}
+	
 	@Override
 	public Object getItem(int position) {
 		return summaries.get(position);

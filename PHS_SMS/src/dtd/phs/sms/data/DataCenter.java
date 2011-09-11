@@ -1,5 +1,7 @@
 package dtd.phs.sms.data;
 
+import dtd.phs.sms.ShowConversation;
+import dtd.phs.sms.data.entities.ContactItem;
 import dtd.phs.sms.global.ThreadPools;
 
 
@@ -25,6 +27,12 @@ public class DataCenter {
 		Request request = new GetSummariesRequest(dataGetter);
 		ThreadPools.getInstance().add( request );
 
+	}
+
+	public static void requestMessagesForContact(int threadId, IDataGetter delegate) {
+		Request request = new GetMessagesForThreadIdRequest(threadId,delegate);
+		ThreadPools.getInstance().add(request);
+		
 	}
 
 }

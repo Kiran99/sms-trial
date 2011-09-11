@@ -13,22 +13,38 @@ public class SMSProvider {
 	public static final String SMS_SENT = "content://sms/sent/";
 
 	public static SMSList getAllMessagesSortBy(String sortField) {
+		return getMessages(null, sortField);
+	}
+
+	private static SMSList getMessages(String cond,String sortField) {
 		Uri smsURI = Uri.parse(SMS_PROVIDER);
 		Context context = ApplicationContext.getInstance(null);
-		
-		Cursor cursor = context.getContentResolver().query(
-				smsURI,
-				null,
-				null, null, sortField);
 		SMSList list = new SMSList();
-		if ( cursor.moveToFirst())  {
-			while (true) {
-				SMSItem item = new SMSItem( cursor );
-				list.add(item);
-				if ( ! cursor.moveToNext()) break;
+		Cursor cursor = null;
+		try {
+			cursor = 
+				context.getContentResolver().
+				query(smsURI,null,cond,null, sortField);
+
+			if ( cursor.moveToFirst())  {
+				while (true) {
+					SMSItem item = new SMSItem( cursor );
+					list.add(item);
+					if ( ! cursor.moveToNext()) break;
+				}
 			}
+			return list;
+		} catch (Exception e) {
+			return list;
+		} finally {
+			if ( cursor != null )
+				cursor.close();
 		}
-		cursor.close();
-		return list;
+	}
+
+	public static SMSList getMessagesForThread(int threadId) {
+		String sortField = SMSItem.DATE + " asc";
+		String cond = SMSItem.THREAD_ID + " = " + threadId;
+		return getMessages( cond, sortField);
 	} 
 }

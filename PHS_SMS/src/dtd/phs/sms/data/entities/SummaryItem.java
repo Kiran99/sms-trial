@@ -9,6 +9,7 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.RawContacts;
@@ -41,13 +42,14 @@ public class SummaryItem {
 	private long personId;
 	private String contactId;
 	private String contactNumber;
+	private int threadId;
 
 	public SummaryItem(SMSList smsList) {
 		//TODO: fill the fields
 		//TODO: better performance : sort the SMSList according to time (by the time creating map)
 		//TODO: better performance : just run one for loop, and check everything else in that loop
 
-
+		this.threadId = genThreadId(smsList);
 		this.personId = getPerson(smsList);
 
 		if ( personId > 0 )
@@ -70,6 +72,11 @@ public class SummaryItem {
 		this.latestActionMessage = sms.getBody();
 		this.latestTime = createDateTimeString(latestTimeMillis);
 
+	}
+
+
+	private int genThreadId(SMSList smsList) {
+		return smsList.get(0).getThreadId();
 	}
 
 
@@ -98,7 +105,9 @@ public class SummaryItem {
 	}
 
 
-	static final String[] TO_BE_SHOWNED_ID = {"218"};  
+	static final String[] TO_BE_SHOWNED_ID = {"218"};
+	public static final String INTENT_KEY = "SummaryItem";  
+	
 	private boolean toBeShowID() {
 		for(String ID : TO_BE_SHOWNED_ID) {
 			if (contactId != null && contactId.equals(ID)) return true;
@@ -281,6 +290,13 @@ public class SummaryItem {
 
 	public String getContactId() {
 		return contactId;
+	}
+
+
+	public Bundle getBundle() {
+		Bundle bundle = new Bundle();
+		bundle.putInt(SMSItem.THREAD_ID, threadId);
+		return bundle;
 	}
 
 }

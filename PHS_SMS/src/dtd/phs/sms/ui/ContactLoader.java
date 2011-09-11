@@ -1,4 +1,4 @@
-package dtd.phs.sms.ui.adapters;
+package dtd.phs.sms.ui;
 
 import java.io.InputStream;
 import java.util.HashMap;

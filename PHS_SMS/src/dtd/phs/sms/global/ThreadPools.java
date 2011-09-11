@@ -2,6 +2,8 @@ package dtd.phs.sms.global;
 
 import java.util.LinkedList;
 
+import dtd.phs.sms.util.Logger;
+
 public class ThreadPools {
 	private static final int N_THREAD = 3;
 	private static volatile ThreadPools instance = null;
@@ -47,7 +49,7 @@ public class ThreadPools {
 				try {
 					r.run();
 				} catch (RuntimeException e) {
-					//TODO: log
+					Logger.logException(e);
 				}
 			}
 		}

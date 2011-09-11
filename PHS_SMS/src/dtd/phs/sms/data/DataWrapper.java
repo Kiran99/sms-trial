@@ -2,7 +2,7 @@ package dtd.phs.sms.data;
 
 
 public class DataWrapper {
-	public enum Type {SUMMARIES_LIST};
+	public enum Type {SUMMARIES_LIST, SMS_LIST};
 	private Type type;
 	private Object data;
 	
