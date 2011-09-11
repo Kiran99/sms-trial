@@ -1,7 +1,5 @@
 package dtd.phs.sms.data;
 
-import dtd.phs.sms.ShowConversation;
-import dtd.phs.sms.data.entities.ContactItem;
 import dtd.phs.sms.global.ThreadPools;
 
 

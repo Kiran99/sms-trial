@@ -1,10 +1,7 @@
 package dtd.phs.sms.data.entities;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 
 import android.net.Uri;
 import dtd.phs.sms.util.Logger;
