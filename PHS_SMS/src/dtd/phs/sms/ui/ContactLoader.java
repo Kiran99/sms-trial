@@ -84,7 +84,7 @@ public class ContactLoader implements Runnable {
 			if ( cursor.moveToFirst() ) {
 				contactName = cursor.getString(0);
 				cache.put(contactId, contactName);
-				return contactName + " ::ID = " + contactId;
+				return contactName; //+ " ::ID = " + contactId;
 			} else return null;
 		} catch (Exception e) {
 			Logger.logException(e);

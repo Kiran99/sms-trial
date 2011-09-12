@@ -3,7 +3,6 @@ package dtd.phs.sms.data;
 import dtd.phs.sms.data.DataWrapper.Type;
 import dtd.phs.sms.data.entities.SMSItem;
 import dtd.phs.sms.data.entities.SMSList;
-import dtd.phs.sms.data.entities.SummariesCreator;
 import dtd.phs.sms.data.entities.SummariesList;
 import dtd.phs.sms.global.UIThreadHandler;
 import dtd.phs.sms.providers.SMSProvider;

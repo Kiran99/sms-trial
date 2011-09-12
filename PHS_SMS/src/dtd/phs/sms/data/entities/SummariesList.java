@@ -28,7 +28,7 @@ public class SummariesList extends ArrayList<SummaryItem> {
 		return this.get(position).getLatestActionMessage();	
 	}
 
-	static void sortByTime(SummariesList summaries) {
+	public static void sortByTime(SummariesList summaries) {
 		Logger.logInfo(" summaries is sort !");
 		Collections.sort(summaries, new SummaryItem.TimeComparator());
 	}

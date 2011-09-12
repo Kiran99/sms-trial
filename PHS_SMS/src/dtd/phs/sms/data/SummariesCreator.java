@@ -1,7 +1,9 @@
 package dtd.phs.sms.data;
 
 import java.util.HashMap;
+import java.util.Map;
 
+import dtd.phs.sms.data.entities.SMSItem;
 import dtd.phs.sms.data.entities.SMSList;
 import dtd.phs.sms.data.entities.SummariesList;
 import dtd.phs.sms.data.entities.SummaryItem;
@@ -21,7 +23,25 @@ public class SummariesCreator {
 			SummaryItem item = new SummaryItem(list);
 			summList.add(item);
 		}
-		Summ
+		SummariesList.sortByTime(summList);
+		return summList;
+	}
+
+	private static HashMap<Integer, SMSList> divideToGroups(SMSList allMessages) {
+		HashMap<Integer, SMSList> map = new HashMap<Integer, SMSList>();
+		for(int i = 0 ; i < allMessages.size() ; i++) {
+			SMSList list = new SMSList();
+			SMSItem firstItem = allMessages.get(i);
+			for(int j = i; j < allMessages.size() ; j++) {
+				SMSItem item = allMessages.get(j);
+				if ( item.getThreadId() != firstItem.getThreadId() ) break;
+				list.add(item);
+				i = j;
+			}
+			map.put(firstItem.getThreadId(), list);			
+				
+		}
+		return map;
 	}
 
 }
