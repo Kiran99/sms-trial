@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="horizontal"
+  android:layout_width="fill_parent"
+  android:layout_height="wrap_content">
+    <EditText
+    	android:id="@+id/etMessages"
+    	android:layout_width="1dp" 
+    	android:layout_weight="1"
+    	android:layout_height="fill_parent" 
+    />
+    <LinearLayout
+    	android:orientation="vertical" 
+    	android:layout_width="96dp"
+    	android:layout_height="fill_parent"
+    >
+    	<TextView
+	    	android:id="@+id/tvCount"
+	    	android:layout_width="fill_parent" 
+	    	android:layout_height="wrap_content"
+	    	android:text="0/160" 
+    	/>
+    	<Button
+    		android:id="@+id/btSend"
+    		android:layout_width="fill_parent"
+    		android:layout_height="wrap_content" 
+    		android:text="@string/send"
+
+    	/>
+    	<Button
+    		android:id="@+id/btAttach"
+    		android:layout_width="fill_parent"
+    		android:layout_height="wrap_content" 
+    		android:text="@string/attach"
+    	/>
+    </LinearLayout>
+</LinearLayout>
