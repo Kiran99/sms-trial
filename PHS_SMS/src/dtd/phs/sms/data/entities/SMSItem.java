@@ -150,8 +150,6 @@ public class SMSItem {
 		setSubject(cursor.getString(cursor.getColumnIndex(SUBJECT)));
 		setThreadId(cursor.getInt(cursor.getColumnIndex(THREAD_ID)));
 		setType(cursor.getInt(cursor.getColumnIndex(TYPE)));
-		
-		
 	}
 	
 	

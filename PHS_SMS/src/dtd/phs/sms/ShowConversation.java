@@ -14,6 +14,7 @@ import dtd.phs.sms.data.DataCenter;
 import dtd.phs.sms.data.DataWrapper;
 import dtd.phs.sms.data.IDataGetter;
 import dtd.phs.sms.data.IListFactory;
+import dtd.phs.sms.data.MessagesFactory;
 import dtd.phs.sms.data.entities.SMSItem;
 import dtd.phs.sms.util.Logger;
 
@@ -31,7 +32,7 @@ implements IDataGetter
 	private ImageView ivAvatar;
 	private TextView tvContactName;
 	private TextView tvNumber;
-	private ListView lvMessages;
+	private ListView listview;
 	private EditText etMessage;
 	private TextView tvCount;
 	private Button btSend;
@@ -80,7 +81,7 @@ implements IDataGetter
 		tvNumber = (TextView) findViewById(R.id.tvNumber);
 
 		//listview
-		lvMessages = (ListView) findViewById(R.id.list);
+		listview = (ListView) findViewById(R.id.list);
 
 		//Bottom
 		etMessage = (EditText) findViewById(R.id.etMessage);
@@ -115,8 +116,9 @@ implements IDataGetter
 	@Override
 	public void onGetDataSuccess(DataWrapper wrapper) {
 		adapter = adapterFactory.createAdapter(wrapper.getData());
-		lvMessages.setAdapter(adapter);
-		lvMessages.setOnItemClickListener(adapterFactory.createOnItemClickListener(this, adapter));
+		listview.setAdapter(adapter);
+		listview.setOnItemClickListener(adapterFactory.createOnItemClickListener(this, adapter));
+		showOnlyView(DATA_FRAME);
 	}
 
 }
