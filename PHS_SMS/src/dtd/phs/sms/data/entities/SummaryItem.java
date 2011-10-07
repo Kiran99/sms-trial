@@ -53,7 +53,7 @@ public class SummaryItem {
 		this.personId = getPerson(smsList);
 
 		if ( personId > 0 )
-			this.contactId = getContactID(personId);
+			this.contactId = SMSItem.getContactID(personId);
 
 		if ( contactId != null ) {
 			Uri contactURI = Uri.withAppendedPath(Contacts.CONTENT_URI, contactId);
@@ -119,30 +119,11 @@ public class SummaryItem {
 
 
 
-	static private String getContactID(long personId) {
-		if ( personId <= 0 ) return null;
-		Cursor cursor = null;
-		try { 
-			Context context = ApplicationContext.getInstance(null);
-			ContentResolver cr = context.getContentResolver();
-			Uri personUri = ContentUris.withAppendedId(RawContacts.CONTENT_URI,personId);
-			cursor =  cr.query(personUri, new String[] {RawContacts.CONTACT_ID}, null, null, null);
-			if ( cursor.moveToFirst() ) {
-				String contactId = cursor.getString(cursor.getColumnIndex(RawContacts.CONTACT_ID));
 
-				return contactId;
-			} else return null;
-		} catch (Exception e) {
-			Logger.logException(e);
-			return null;
-		} finally {
-			if ( cursor != null ) cursor.close();
-		}
-	}
 
 	static public String getContactID(SMSList smsList) {
 		long person = getPerson(smsList);
-		return getContactID(person);
+		return SMSItem.getContactID(person);
 	}
 
 	//	public InputStream getContactPhotoStream() {

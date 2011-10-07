@@ -1,6 +1,15 @@
 package dtd.phs.sms.data.entities;
 
+import dtd.phs.sms.global.ApplicationContext;
+import dtd.phs.sms.util.Logger;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.ContactsContract.RawContacts;
+import android.text.style.BackgroundColorSpan;
 
 public class SMSItem {
 	/**
@@ -226,6 +235,52 @@ public class SMSItem {
 	public void setPerson(int person) {
 		this.person = person;
 	}
+	
+	static public String getContactID(long personId) {
+		if ( personId <= 0 ) return null;
+		Cursor cursor = null;
+		try { 
+			Context context = ApplicationContext.getInstance(null);
+			ContentResolver cr = context.getContentResolver();
+			Uri personUri = ContentUris.withAppendedId(RawContacts.CONTENT_URI,personId);
+			cursor =  cr.query(personUri, new String[] {RawContacts.CONTACT_ID}, null, null, null);
+			if ( cursor.moveToFirst() ) {
+				String contactId = cursor.getString(cursor.getColumnIndex(RawContacts.CONTACT_ID));
+
+				return contactId;
+			} else return null;
+		} catch (Exception e) {
+			Logger.logException(e);
+			return null;
+		} finally {
+			if ( cursor != null ) cursor.close();
+		}
+	}
+
+	static public Bundle getContact(long personId,String[] columns) {
+		if ( personId <= 0 ) return null;
+		Cursor cursor = null;
+		Bundle bundle = new Bundle();
+		try { 
+			Context context = ApplicationContext.getInstance(null);
+			ContentResolver cr = context.getContentResolver();
+			Uri personUri = ContentUris.withAppendedId(RawContacts.CONTENT_URI,personId);
+			cursor =  cr.query(personUri, columns, null, null, null);
+			if ( cursor.moveToFirst() ) {
+				for(String key : columns) {
+					String val = cursor.getString(cursor.getColumnIndex(key));
+					bundle.putString(key, val);
+				}
+				return bundle;
+			} else return null;
+		} catch (Exception e) {
+			Logger.logException(e);
+			return null;
+		} finally {
+			if ( cursor != null ) cursor.close();
+		}
+	}
+	
 //	public String getServiceCenter() {
 //		return serviceCenter;
 //	}

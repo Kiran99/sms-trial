@@ -1,6 +1,6 @@
 package dtd.phs.sms.global;
 
-import java.util.LinkedList;
+import java.util.Stack;
 
 import dtd.phs.sms.util.Logger;
 
@@ -8,10 +8,10 @@ public class ThreadPools {
 	private static final int N_THREAD = 3;
 	private static volatile ThreadPools instance = null;
 	private final PoolWorker[] threads = new PoolWorker[N_THREAD];
-	private final LinkedList<Runnable> queue;
+	private final Stack<Runnable> jobsStack;
 	
 	private ThreadPools() {
-		queue = new LinkedList<Runnable>();
+		jobsStack = new Stack<Runnable>();
 		for(int i = 0; i < N_THREAD ; i++) {
 			threads[i] = new PoolWorker();
 			threads[i].start();
@@ -26,24 +26,26 @@ public class ThreadPools {
 	}
 	
 	public void add(Runnable r) {
-		synchronized (queue) {
-			queue.add(r);
-			queue.notify();
+		synchronized (jobsStack) {
+			jobsStack.add(r);
+			jobsStack.notify();
 		}
 	}
+	
 	public class PoolWorker extends Thread {
 		public void run() {
 			Runnable r;
 			while (true) {
-				synchronized (queue) {
-					while (queue.isEmpty() ) {
+				synchronized (jobsStack) {
+					while (jobsStack.isEmpty() ) {
 						try {
-							queue.wait();
+							jobsStack.wait();
+							break;
 						} catch (InterruptedException e) {
 							
 						}
 					}
-					r = (Runnable) queue.removeFirst();
+					r = (Runnable) jobsStack.pop();
 				}
 				
 				try {

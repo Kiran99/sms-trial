@@ -43,6 +43,7 @@ public class MessagesAdapter extends BaseAdapter {
 		Holder holder = null;
 		if ( v == null ) {
 			v = Helpers.inflate(R.layout.message_item, null);
+			holder = new Holder();
 			holder.tvMessage = (TextView)v.findViewById(R.id.tvMessage);
 			v.setTag(holder);
 		} else {

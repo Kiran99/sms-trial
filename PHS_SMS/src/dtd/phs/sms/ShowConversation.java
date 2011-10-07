@@ -1,7 +1,11 @@
 package dtd.phs.sms;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract.RawContacts;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -16,6 +20,8 @@ import dtd.phs.sms.data.IDataGetter;
 import dtd.phs.sms.data.IListFactory;
 import dtd.phs.sms.data.MessagesFactory;
 import dtd.phs.sms.data.entities.SMSItem;
+import dtd.phs.sms.data.entities.SMSList;
+import dtd.phs.sms.global.ThreadPools;
 import dtd.phs.sms.util.Logger;
 
 
@@ -115,10 +121,65 @@ implements IDataGetter
 
 	@Override
 	public void onGetDataSuccess(DataWrapper wrapper) {
+		updateListView(wrapper);
+		updateContactsInfo(wrapper.getData());
+		
+	}
+
+	private void updateContactsInfo(final Object data) {
+		//TODO: this shouldn't be here ! UI should not have knowledge about inside of database
+		ThreadPools.getInstance().add(new Runnable() {
+			@Override
+			public void run() {
+				SMSList messages = (SMSList) data;
+				loadContactsFromMessages( messages );
+			}
+
+			private void loadContactsFromMessages(SMSList messages) {
+				List<Long> personIds = getAllPersonIds(messages);				
+				ArrayList<String> contactIds = getContactIds(personIds);
+				
+				
+			}
+
+			private List<Long> getAllPersonIds(SMSList messages) {
+				List<Long> ids = new ArrayList<Long>();
+				//TODO: what happens with thread contains only sent sms (no
+				for(SMSItem item : messages) {
+					long personId = item.getPerson();
+					if ( personId > 0 ) {
+						ids.add(personId);
+					}
+				}
+				return ids;
+			}
+
+			private ArrayList<String> getContactIds(List<Long> personIds) {
+				ArrayList<String> contactsId = new ArrayList<String>();
+				for(long personId : personIds) {
+					String contactId = SMSItem.getContactID(personId);
+					boolean dup = false;
+					for(int i = 0 ; i < contactsId.size(); i++)
+						if ( contactsId.get(i).equals(contactId) ) {
+							dup = true;
+							contactsId.set(i, contactId);
+							break;
+						} 
+					if ( ! dup ) contactsId.add(contactId);
+				}
+				return contactsId;
+			}
+		});
+		
+	}
+
+	private void updateListView(DataWrapper wrapper) {
 		adapter = adapterFactory.createAdapter(wrapper.getData());
 		listview.setAdapter(adapter);
 		listview.setOnItemClickListener(adapterFactory.createOnItemClickListener(this, adapter));
+		listview.setSelection(adapter.getCount());
 		showOnlyView(DATA_FRAME);
 	}
+	
 
 }
