@@ -9,7 +9,6 @@ import android.provider.ContactsContract.Contacts;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import dtd.phs.sms.global.ApplicationContext;
 
 public class Helpers {
 

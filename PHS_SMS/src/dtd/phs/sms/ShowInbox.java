@@ -68,7 +68,7 @@ public class ShowInbox
 	}
 
 	public void onGetDataSuccess(DataWrapper wrapper) {		
-		adapter = adapterFactory.createAdapter( wrapper.getData() );
+		adapter = adapterFactory.createAdapter( wrapper.getData(), getApplicationContext() );
 		listview.setAdapter( adapter );
 		listview.setOnItemClickListener( adapterFactory.createOnItemClickListener(this,adapter) );
 		showOnlyView(DATA_FRAME);

@@ -1,6 +1,7 @@
 package dtd.phs.sms.data;
 
 import android.app.Activity;
+import android.content.Context;
 import android.widget.BaseAdapter;
 import android.widget.AdapterView.OnItemClickListener;
 import dtd.phs.sms.data.entities.SummariesList;
@@ -11,8 +12,8 @@ public class SummariesListFactory implements IListFactory {
 
 
 	@Override
-	public BaseAdapter createAdapter(Object object) {
-		return new SummariesAdapter((SummariesList) object);
+	public BaseAdapter createAdapter(Object object, Context context) {
+		return new SummariesAdapter((SummariesList) object, context);
 	}
 
 	@Override

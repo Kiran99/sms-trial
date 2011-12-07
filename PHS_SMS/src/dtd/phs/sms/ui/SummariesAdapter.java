@@ -1,5 +1,6 @@
 package dtd.phs.sms.ui;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.View;
@@ -9,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import dtd.phs.sms.R;
 import dtd.phs.sms.data.entities.SummariesList;
-import dtd.phs.sms.global.ApplicationContext;
 import dtd.phs.sms.util.Helpers;
 import dtd.phs.sms.util.Logger;
 
@@ -24,10 +24,12 @@ public class SummariesAdapter extends BaseAdapter {
 	private SummariesList summaries;
 
 	private ContactLoader contactsLoader;
+	private Context context;
 
-	public SummariesAdapter(SummariesList summaries) {
+	public SummariesAdapter(SummariesList summaries, Context context) {
 		this.summaries = summaries;
-		contactsLoader = new ContactLoader();
+		contactsLoader = new ContactLoader(context);
+		this.context = context;
 	}
 
 	@Override
@@ -68,7 +70,7 @@ public class SummariesAdapter extends BaseAdapter {
 	private View getView(View convertView) {
 		View v = convertView;
 		if ( v == null ) {
-			v = Helpers.inflate(ITEM_LAYOUT,null);
+			v = Helpers.inflate(ITEM_LAYOUT,null, context);
 			Holder holder = new Holder();
 			holder.ivAvatar = (ImageView) v.findViewById(R.id.ivAvatar);
 			holder.tvContact = (TextView) v.findViewById(R.id.tvContact);
@@ -98,7 +100,7 @@ public class SummariesAdapter extends BaseAdapter {
 
 	private void updateAvatar(int position, Holder holder) {
 		if (STUB_AVATAR_BITMAP == null) {
-			STUB_AVATAR_BITMAP = BitmapFactory.decodeResource(ApplicationContext.getInstance(null).getResources(), STUB_AVATAR);
+			STUB_AVATAR_BITMAP = BitmapFactory.decodeResource(context.getResources(), STUB_AVATAR);
 		}
 		holder.ivAvatar.setImageBitmap(STUB_AVATAR_BITMAP);
 //		Uri uri = summaries.getAvatarURI(position);

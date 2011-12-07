@@ -133,7 +133,7 @@ implements IDataGetter
 
 
 	private void updateListView(DataWrapper wrapper) {
-		adapter = adapterFactory.createAdapter(wrapper.getData());
+		adapter = adapterFactory.createAdapter(wrapper.getData(), getApplicationContext());
 		listview.setAdapter(adapter);
 		listview.setOnItemClickListener(adapterFactory.createOnItemClickListener(this, adapter));
 		listview.setSelection(adapter.getCount());
