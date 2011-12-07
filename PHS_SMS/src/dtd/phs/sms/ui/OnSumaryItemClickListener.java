@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import dtd.phs.sms.ShowConversation;
-import dtd.phs.sms.data.entities.SMSItem;
 import dtd.phs.sms.data.entities.SummariesList;
 import dtd.phs.sms.data.entities.SummaryItem;
 

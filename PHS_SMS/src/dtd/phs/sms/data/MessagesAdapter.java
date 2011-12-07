@@ -1,5 +1,6 @@
 package dtd.phs.sms.data;
 
+import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -17,9 +18,11 @@ public class MessagesAdapter extends BaseAdapter {
 	}
 
 	private SMSList messages;
+	private Context context;
 
-	public MessagesAdapter(SMSList messages) {
+	public MessagesAdapter(SMSList messages, Context context) {
 		this.messages = messages;
+		this.context = context;
 	}
 
 	@Override
@@ -42,7 +45,7 @@ public class MessagesAdapter extends BaseAdapter {
 		View v = convertView;
 		Holder holder = null;
 		if ( v == null ) {
-			v = Helpers.inflate(R.layout.message_item, null);
+			v = Helpers.inflate(R.layout.message_item, null, context);
 			holder = new Holder();
 			holder.tvMessage = (TextView)v.findViewById(R.id.tvMessage);
 			v.setTag(holder);

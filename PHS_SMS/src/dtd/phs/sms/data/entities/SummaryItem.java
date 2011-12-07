@@ -5,15 +5,12 @@ import java.util.Comparator;
 import java.util.HashMap;
 
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
-import android.provider.ContactsContract.RawContacts;
-import dtd.phs.sms.global.ApplicationContext;
 import dtd.phs.sms.util.Logger;
 
 public class SummaryItem {
@@ -44,17 +41,19 @@ public class SummaryItem {
 	private String contactId;
 	private String contactNumber;
 	private int threadId;
+	private Context context;
 
-	public SummaryItem(SMSList smsList) {
+	public SummaryItem(SMSList smsList, Context context) {
 		//TODO: fill the fields
 		//TODO: better performance : sort the SMSList according to time (by the time creating map)
 		//TODO: better performance : just run one for loop, and check everything else in that loop
 
+		this.context = context;
 		this.threadId = genThreadId(smsList);
 		this.personId = getPerson(smsList);
 
 		if ( personId > 0 )
-			this.contactId = SMSItem.getContactID(personId);
+			this.contactId = SMSItem.getContactID(context,personId);
 
 		if ( contactId != null ) {
 			Uri contactURI = Uri.withAppendedPath(Contacts.CONTENT_URI, contactId);
@@ -83,7 +82,6 @@ public class SummaryItem {
 
 	private void debugInfo() {
 		if ( toBeShowID() ) {
-			Context context = ApplicationContext.getInstance(null);
 			ContentResolver contentResolver = context.getContentResolver();
 			Cursor cursor = contentResolver.query(Uri.withAppendedPath(Contacts.CONTENT_URI,contactId), null, null, null, null);
 //			Cursor cursor = contentResolver.query(Uri.withAppendedPath(RawContacts.CONTENT_URI,""+personId), null, null, null, null);
@@ -122,9 +120,9 @@ public class SummaryItem {
 
 
 
-	static public String getContactID(SMSList smsList) {
+	static public String getContactID(Context context, SMSList smsList) {
 		long person = getPerson(smsList);
-		return SMSItem.getContactID(person);
+		return SMSItem.getContactID(context, person);
 	}
 
 	//	public InputStream getContactPhotoStream() {

@@ -1,7 +1,8 @@
 package dtd.phs.sms.data;
 
 import java.util.HashMap;
-import java.util.Map;
+
+import android.content.Context;
 
 import dtd.phs.sms.data.entities.SMSItem;
 import dtd.phs.sms.data.entities.SMSList;
@@ -13,14 +14,15 @@ public class SummariesCreator {
 	/**
 	 * 
 	 * @param allMessages precondition: the messages are sorted by threadId
+	 * @param context 
 	 * @return
 	 */
-	public static SummariesList createSummaries(SMSList allMessages) {
+	public static SummariesList createSummaries(SMSList allMessages, Context context) {
 		SummariesList summList = new SummariesList();
 		HashMap<Integer, SMSList> mapThreadId2Messages = divideToGroups(allMessages);
 		for(Integer threadId : mapThreadId2Messages.keySet()) {
 			SMSList list = mapThreadId2Messages.get(threadId);
-			SummaryItem item = new SummaryItem(list);
+			SummaryItem item = new SummaryItem(list,context);
 			summList.add(item);
 		}
 		SummariesList.sortByTime(summList);

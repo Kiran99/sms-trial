@@ -13,7 +13,6 @@ import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
 import android.widget.ImageView;
 import android.widget.TextView;
-import dtd.phs.sms.global.ApplicationContext;
 import dtd.phs.sms.global.UIThreadHandler;
 import dtd.phs.sms.util.Logger;
 
@@ -22,14 +21,18 @@ public class ContactLoader implements Runnable {
 	ViewStack stack = new ViewStack();
 	private HashMap<String, String> cache;
 	private HashMap<String, Bitmap> cacheAvatar;
+	private Context context;
 
-	public ContactLoader() {
+	public ContactLoader(Context context) {
+		this.context = context;
 		loadContactThread = new Thread(this);
 		cache = new HashMap<String, String>();
 		cacheAvatar = new HashMap<String, Bitmap>();
 		loadContactThread.setPriority(Thread.NORM_PRIORITY -1);
 		loadContactThread.start();
+		
 		Logger.logInfo("Loader thread is started !");
+		
 	}
 
 	public void loadContact(TextView tvContact , ImageView ivAvatar, String contactId) {
@@ -85,7 +88,7 @@ public class ContactLoader implements Runnable {
 		try {
 			Uri contactUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, contactId);
 			cursor = 
-				ApplicationContext.getInstance(null).getContentResolver().
+				context.getContentResolver().
 				query(contactUri, new String[] {Contacts.DISPLAY_NAME}, null, null, null);
 			if ( cursor.moveToFirst() ) {
 				contactName = cursor.getString(0);
@@ -102,7 +105,6 @@ public class ContactLoader implements Runnable {
 
 
 	public InputStream getContactPhotoStream(String contactId) {
-		Context context = ApplicationContext.getInstance(null);
 		Uri contactURI = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI,contactId);
 		try {
 			return ContactsContract.Contacts.openContactPhotoInputStream(context.getContentResolver(), contactURI);
@@ -113,7 +115,7 @@ public class ContactLoader implements Runnable {
 	}
 	public Bitmap getContactPhoto(String contactId) {
 		if (SummariesAdapter.STUB_AVATAR_BITMAP == null) 
-			SummariesAdapter.STUB_AVATAR_BITMAP = BitmapFactory.decodeResource(ApplicationContext.getInstance(null).getResources(), SummariesAdapter.STUB_AVATAR);
+			SummariesAdapter.STUB_AVATAR_BITMAP = BitmapFactory.decodeResource(context.getResources(), SummariesAdapter.STUB_AVATAR);
 		if ( contactId == null ) return  SummariesAdapter.STUB_AVATAR_BITMAP;
 
 		Bitmap avatar = cacheAvatar.get(contactId);
@@ -140,7 +142,6 @@ public class ContactLoader implements Runnable {
 		String where = ContactsContract.Data.MIMETYPE 
 		+ "='" + ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE + "' AND " 
 		+ ContactsContract.Data.CONTACT_ID + " = " + contactId;
-		Context context = ApplicationContext.getInstance(null);
 		Cursor cursor = context.getContentResolver().query(uri, projection, where, null, null);
 		if( cursor != null && cursor.moveToFirst() ) {
 			byte[] photoData = cursor.getBlob(0);

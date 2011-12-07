@@ -60,7 +60,7 @@ public class ShowInbox
 	 * - Summary include: Contact + { thread ids } + { most recent messages | Draft }
 	 */
 	private void loadData() {
-		DataCenter.requestSummaries(this);
+		DataCenter.requestSummaries(this,this.getApplicationContext());
 	}
 
 	public void onGetDataFailed(Exception exception) {

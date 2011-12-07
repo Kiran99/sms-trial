@@ -1,5 +1,6 @@
 package dtd.phs.sms.senders;
 
+import android.content.Context;
 import dtd.phs.sms.data.entities.MessageItem;
 
 //TODO: All this must be called inside an service + new thread
@@ -10,6 +11,11 @@ public class Postman
 {
 	
 	private SendMessageListener messageListener;
+	private Context context;
+
+	public Postman(Context context) {
+		this.context = context;
+	}
 
 	public void sendMessage(MessageItem message, SendMessageListener listener) {
 		setListener(listener);
@@ -26,7 +32,7 @@ public class Postman
 
 
 	private void tryToSendNormalMessage(MessageItem mess) {
-		INormalMessageSender sender = new AndroidSMSSender(this);
+		INormalMessageSender sender = new AndroidSMSSender(this,context);
 		sender.send( mess );
 	}
 

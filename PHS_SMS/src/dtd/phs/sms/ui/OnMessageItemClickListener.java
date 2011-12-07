@@ -1,10 +1,10 @@
 package dtd.phs.sms.ui;
 
-import dtd.phs.sms.data.MessagesAdapter;
 import android.app.Activity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import dtd.phs.sms.data.MessagesAdapter;
 
 public class OnMessageItemClickListener implements OnItemClickListener {
 

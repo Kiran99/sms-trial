@@ -1,7 +1,5 @@
 package dtd.phs.sms.data.entities;
 
-import dtd.phs.sms.global.ApplicationContext;
-import dtd.phs.sms.util.Logger;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
@@ -9,7 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract.RawContacts;
-import android.text.style.BackgroundColorSpan;
+import dtd.phs.sms.util.Logger;
 
 public class SMSItem {
 	/**
@@ -236,11 +234,11 @@ public class SMSItem {
 		this.person = person;
 	}
 	
-	static public String getContactID(long personId) {
+	static public String getContactID(Context context,long personId) {
 		if ( personId <= 0 ) return null;
 		Cursor cursor = null;
 		try { 
-			Context context = ApplicationContext.getInstance(null);
+
 			ContentResolver cr = context.getContentResolver();
 			Uri personUri = ContentUris.withAppendedId(RawContacts.CONTENT_URI,personId);
 			cursor =  cr.query(personUri, new String[] {RawContacts.CONTACT_ID}, null, null, null);
@@ -257,12 +255,11 @@ public class SMSItem {
 		}
 	}
 
-	static public Bundle getContact(long personId,String[] columns) {
+	static public Bundle getContact(Context context,long personId,String[] columns) {
 		if ( personId <= 0 ) return null;
 		Cursor cursor = null;
 		Bundle bundle = new Bundle();
 		try { 
-			Context context = ApplicationContext.getInstance(null);
 			ContentResolver cr = context.getContentResolver();
 			Uri personUri = ContentUris.withAppendedId(RawContacts.CONTENT_URI,personId);
 			cursor =  cr.query(personUri, columns, null, null, null);
