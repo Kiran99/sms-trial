@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import dtd.phs.sms.ShowConversation;
+import dtd.phs.sms.data.entities.SMSItem;
 import dtd.phs.sms.data.entities.SummariesList;
 import dtd.phs.sms.data.entities.SummaryItem;
 
@@ -25,7 +26,7 @@ public class OnSumaryItemClickListener implements OnItemClickListener {
 		SummaryItem item = summaries.get(position);
 		Bundle bundle = item.getBundle();
 		Intent i = new Intent(activity,ShowConversation.class);
-		i.putExtra( ShowConversation.INPUT_BUNDLE, bundle);
+		i.putExtra( ShowConversation.INPUT_BUNDLE, bundle);		
 		activity.startActivity(i);
 	}
 

@@ -11,6 +11,7 @@ import dtd.phs.sms.R;
 import dtd.phs.sms.data.entities.SummariesList;
 import dtd.phs.sms.global.ApplicationContext;
 import dtd.phs.sms.util.Helpers;
+import dtd.phs.sms.util.Logger;
 
 public class SummariesAdapter extends BaseAdapter {
 
@@ -82,8 +83,10 @@ public class SummariesAdapter extends BaseAdapter {
 		updateAvatar(position, holder);	
 		updateContactName(position, holder);
 		String contactId = summaries.getContactId(position);
+		
 		if ( contactId != null )
 			contactsLoader.loadContact(holder.tvContact, holder.ivAvatar, contactId);
+		else Logger.logInfo("Contact ID is NULL !");
 
 		holder.tvTime.setText(summaries.getLatestTime(position));
 		holder.tvShortDesc.setText(summaries.getLatestActionMessage(position));

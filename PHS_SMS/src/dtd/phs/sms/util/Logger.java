@@ -17,7 +17,7 @@ public class Logger {
 	}
 
 	private static String getLocation() {
-		StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[3];
+		StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[4];
 		String className = stackTraceElement.getClassName();
 		String method = stackTraceElement.getMethodName();
 		int line = stackTraceElement.getLineNumber();

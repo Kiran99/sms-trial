@@ -19,7 +19,7 @@ import dtd.phs.sms.util.Logger;
 
 public class ContactLoader implements Runnable {
 
-	TextViewStack stack = new TextViewStack();
+	ViewStack stack = new ViewStack();
 	private HashMap<String, String> cache;
 	private HashMap<String, Bitmap> cacheAvatar;
 
@@ -29,10 +29,15 @@ public class ContactLoader implements Runnable {
 		cacheAvatar = new HashMap<String, Bitmap>();
 		loadContactThread.setPriority(Thread.NORM_PRIORITY -1);
 		loadContactThread.start();
+		Logger.logInfo("Loader thread is started !");
 	}
 
 	public void loadContact(TextView tvContact , ImageView ivAvatar, String contactId) {
-		TextViewToLoad tvLoad = new TextViewToLoad(tvContact, ivAvatar, contactId);
+		Logger.logInfo("Loading contact: " );
+		if ( contactId != null ) {
+			Logger.logInfo("Loading contact: " + contactId);
+		} else Logger.logInfo("Loading contact: NULL");
+		ViewToLoad tvLoad = new ViewToLoad(tvContact, ivAvatar, contactId);
 		stack.add(tvLoad);
 
 	}
@@ -41,22 +46,23 @@ public class ContactLoader implements Runnable {
 		cache.clear();
 		cacheAvatar.clear(); 
 		loadContactThread.interrupt();
+		Logger.logInfo("Loader thread is stopped !");
 	}
 
 	@Override
 	public void run() {
 		while (true) {
 			try {
-				final TextViewToLoad tvLoad = stack.pop();
+				final ViewToLoad tvLoad = stack.pop();
 				if ( tvLoad.contactId == null ) continue;
 				final String contactName = getContactName(tvLoad.contactId);
 				final Bitmap avatar = getContactPhoto(tvLoad.contactId);
 				UIThreadHandler.getInstance().post(new Runnable() {
 					@Override
 					public void run() {
-						if (contactName != null )
+						if (tvLoad.tvToLoad != null && contactName != null )
 							tvLoad.tvToLoad.setText(contactName);
-						if ( avatar != null )
+						if ( tvLoad.ivToLoad != null && avatar != null )
 							tvLoad.ivToLoad.setImageBitmap(avatar);
 					}
 				});
@@ -119,31 +125,31 @@ public class ContactLoader implements Runnable {
 	}
 
 	private Bitmap getJustPhoto(String contactId) {
-//		Bitmap avatar = null;
-//		InputStream is = getContactPhotoStream(contactId);
-//		if (is == null) {
-//			avatar = SummariesAdapter.STUB_AVATAR_BITMAP;
-//		} else {
-//			avatar = BitmapFactory.decodeStream(is);
-//		}
-//		return avatar;
-		
+		//		Bitmap avatar = null;
+		//		InputStream is = getContactPhotoStream(contactId);
+		//		if (is == null) {
+		//			avatar = SummariesAdapter.STUB_AVATAR_BITMAP;
+		//		} else {
+		//			avatar = BitmapFactory.decodeStream(is);
+		//		}
+		//		return avatar;
+
 		Bitmap avatar = SummariesAdapter.STUB_AVATAR_BITMAP;
 		String[] projection = {ContactsContract.CommonDataKinds.Photo.PHOTO};
 		Uri uri = ContactsContract.Data.CONTENT_URI;
 		String where = ContactsContract.Data.MIMETYPE 
-		       + "='" + ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE + "' AND " 
-		       + ContactsContract.Data.CONTACT_ID + " = " + contactId;
+		+ "='" + ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE + "' AND " 
+		+ ContactsContract.Data.CONTACT_ID + " = " + contactId;
 		Context context = ApplicationContext.getInstance(null);
 		Cursor cursor = context.getContentResolver().query(uri, projection, where, null, null);
 		if( cursor != null && cursor.moveToFirst() ) {
-		        byte[] photoData = cursor.getBlob(0);
-		        if ( photoData != null )
-		        	avatar = BitmapFactory.decodeByteArray(photoData, 0,photoData.length, null);
+			byte[] photoData = cursor.getBlob(0);
+			if ( photoData != null )
+				avatar = BitmapFactory.decodeByteArray(photoData, 0,photoData.length, null);
 		}  
 		cursor.close();
 		return avatar;
-		
+
 	}
 
 	private Bitmap getBitMapByBlahMethod(String contactId) {
@@ -151,11 +157,11 @@ public class ContactLoader implements Runnable {
 		return null;
 	}
 
-	public class TextViewToLoad {
+	public class ViewToLoad {
 		public TextView tvToLoad;
 		public ImageView ivToLoad;
 		public String contactId;
-		public TextViewToLoad(TextView tvToLoad, ImageView ivAvatar, String contactId) {
+		public ViewToLoad(TextView tvToLoad, ImageView ivAvatar, String contactId) {
 			this.tvToLoad = tvToLoad;
 			this.contactId = contactId;
 			this.ivToLoad = ivAvatar;
@@ -164,9 +170,9 @@ public class ContactLoader implements Runnable {
 	}
 
 	private Thread loadContactThread;
-	class TextViewStack {
-		private Stack<TextViewToLoad> stack = new Stack<TextViewToLoad>();
-		public void add(TextViewToLoad tvLoad) {
+	class ViewStack {
+		private Stack<ViewToLoad> stack = new Stack<ViewToLoad>();
+		public void add(ViewToLoad tvLoad) {
 			synchronized (this) {
 				clean(tvLoad);
 				stack.addElement(tvLoad);			
@@ -174,16 +180,16 @@ public class ContactLoader implements Runnable {
 			}
 		}
 
-		private void clean(TextViewToLoad tvLoad) {
+		private void clean(ViewToLoad tvLoad) {
 			for(int i = 0; i < stack.size() ;) {
-				TextViewToLoad tv = stack.get(i);
+				ViewToLoad tv = stack.get(i);
 				if (tv.tvToLoad == tvLoad.tvToLoad) {
 					stack.remove(i);
 				} else i++;
 			}
 		}
 
-		public TextViewToLoad pop() throws InterruptedException {
+		public ViewToLoad pop() throws InterruptedException {
 			synchronized (this) {
 				if ( stack.isEmpty() )
 					this.wait();

@@ -31,6 +31,7 @@ public class SummaryItem {
 
 	private static final String UNKNOWN = "Unknown";
 	private static final long UNKNOWN_PERSON_ID = -1L;
+	public static final String CONTACT_PHONE_NUMBER = "contact_phone_number";  
 	//	private static Bitmap STUB_CONTACT_BITMAP = null;
 	//	private static final int STUB_CONTACT_RES_ID = R.drawable.icon;
 
@@ -276,7 +277,8 @@ public class SummaryItem {
 
 	public Bundle getBundle() {
 		Bundle bundle = new Bundle();
-		bundle.putInt(SMSItem.THREAD_ID, threadId);
+		bundle.putInt(SMSItem.THREAD_ID, threadId);		
+		bundle.putString(SMSItem.ADDRESS,contactNumber);
 		return bundle;
 	}
 

@@ -31,10 +31,15 @@ public class ShowInbox
         setContentView(R.layout.inbox);        
         adapterFactory = new SummariesListFactory();
         bindViews();
-        loadData();
     }
 
 
+    @Override
+    protected void onResume() {
+    	//Note: load data here, so the loader thread could be restarted every time the act is resumed
+    	super.onResume();
+    	loadData();
+    }
 	private void bindViews() {
 		listview = (ListView) findViewById(R.id.list);
 		mainFrames = (FrameLayout) findViewById(R.id.main_frames);

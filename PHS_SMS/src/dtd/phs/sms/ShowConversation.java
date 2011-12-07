@@ -45,6 +45,7 @@ implements IDataGetter
 	
 	private IListFactory adapterFactory;
 	private BaseAdapter adapter;
+	private String passedContactNumber;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -68,8 +69,8 @@ implements IDataGetter
 		if ( bundleExtra == null ) {
 			showInbox();
 		} else {
-			Logger.logInfo("No bundle parameter is given !");
 			threadId = bundleExtra.getInt(SMSItem.THREAD_ID);
+			passedContactNumber = bundleExtra.getString(SMSItem.ADDRESS);
 		}
 	}
 
@@ -83,7 +84,9 @@ implements IDataGetter
 		//Top bar
 		ivAvatar = (ImageView) findViewById(R.id.ivAvatar);
 		tvContactName = (TextView) findViewById(R.id.tvContactName);
+		
 		tvNumber = (TextView) findViewById(R.id.tvNumber);
+		tvNumber.setText(passedContactNumber);
 
 		//listview
 		listview = (ListView) findViewById(R.id.list);
@@ -122,8 +125,19 @@ implements IDataGetter
 		
 	}
 
+
+
+	private void updateListView(DataWrapper wrapper) {
+		adapter = adapterFactory.createAdapter(wrapper.getData());
+		listview.setAdapter(adapter);
+		listview.setOnItemClickListener(adapterFactory.createOnItemClickListener(this, adapter));
+		listview.setSelection(adapter.getCount());
+		showOnlyView(DATA_FRAME);
+	}
+	
+	
 	private void updateContactsInfo(final Object data) {
-		//TODO: this shouldn't be here ! UI should not have knowledge about inside of database
+		//TODO: this shouldn't be here ! UI should have no knowledge about inside of database
 		ThreadPools.getInstance().add(new Runnable() {
 			
 			public void run() {
@@ -134,13 +148,21 @@ implements IDataGetter
 			private void loadContactsFromMessages(SMSList messages) {
 				List<Long> personIds = getAllPersonIds(messages);				
 				ArrayList<String> contactIds = getContactIds(personIds);
+				if ( contactIds.size() == 0 ) {
+					Logger.logInfo("No contacts !");
+				} else if ( contactIds.size() == 1 ) {
+					
+				} else {
+					
+				}
 				
 				
 			}
 
 			private List<Long> getAllPersonIds(SMSList messages) {
 				List<Long> ids = new ArrayList<Long>();
-				//TODO: what happens with thread contains only sent sms (no
+				//TODO: what happens with thread contains only sent sms (no contact id)
+				//Solution: take the telephone number and search for the contact, dont take the person id / contact id
 				for(SMSItem item : messages) {
 					long personId = item.getPerson();
 					if ( personId > 0 ) {
@@ -151,31 +173,22 @@ implements IDataGetter
 			}
 
 			private ArrayList<String> getContactIds(List<Long> personIds) {
-				ArrayList<String> contactsId = new ArrayList<String>();
+				ArrayList<String> contactIds = new ArrayList<String>();
 				for(long personId : personIds) {
 					String contactId = SMSItem.getContactID(personId);
 					boolean dup = false;
-					for(int i = 0 ; i < contactsId.size(); i++)
-						if ( contactsId.get(i).equals(contactId) ) {
+					for(int i = 0 ; i < contactIds.size(); i++)
+						if ( contactIds.get(i).equals(contactId) ) {
 							dup = true;
-							contactsId.set(i, contactId);
+							contactIds.set(i, contactId);
 							break;
 						} 
-					if ( ! dup ) contactsId.add(contactId);
+					if ( ! dup ) contactIds.add(contactId);
 				}
-				return contactsId;
+				return contactIds;
 			}
 		});
 		
 	}
-
-	private void updateListView(DataWrapper wrapper) {
-		adapter = adapterFactory.createAdapter(wrapper.getData());
-		listview.setAdapter(adapter);
-		listview.setOnItemClickListener(adapterFactory.createOnItemClickListener(this, adapter));
-		listview.setSelection(adapter.getCount());
-		showOnlyView(DATA_FRAME);
-	}
-	
 
 }
