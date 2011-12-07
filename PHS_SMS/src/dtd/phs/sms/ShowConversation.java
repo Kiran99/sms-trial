@@ -5,7 +5,6 @@ import java.util.List;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract.RawContacts;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -113,13 +112,10 @@ implements IDataGetter
 		}
 	}
 
-	@Override
 	public void onGetDataFailed(Exception exception) {
-		// TODO Auto-generated method stub
-
+		Logger.logException(exception);
 	}
 
-	@Override
 	public void onGetDataSuccess(DataWrapper wrapper) {
 		updateListView(wrapper);
 		updateContactsInfo(wrapper.getData());
@@ -129,7 +125,7 @@ implements IDataGetter
 	private void updateContactsInfo(final Object data) {
 		//TODO: this shouldn't be here ! UI should not have knowledge about inside of database
 		ThreadPools.getInstance().add(new Runnable() {
-			@Override
+			
 			public void run() {
 				SMSList messages = (SMSList) data;
 				loadContactsFromMessages( messages );

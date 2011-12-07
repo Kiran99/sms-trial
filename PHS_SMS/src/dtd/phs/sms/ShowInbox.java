@@ -11,6 +11,7 @@ import dtd.phs.sms.data.IDataGetter;
 import dtd.phs.sms.data.IListFactory;
 import dtd.phs.sms.data.SummariesListFactory;
 import dtd.phs.sms.ui.SummariesAdapter;
+import dtd.phs.sms.util.Logger;
 
 public class ShowInbox 
 	extends PHS_SMSActivity
@@ -57,13 +58,10 @@ public class ShowInbox
 		DataCenter.requestSummaries(this);
 	}
 
-	@Override
 	public void onGetDataFailed(Exception exception) {
-		// TODO Auto-generated method stub
-		
+		Logger.logException(exception);
 	}
 
-	@Override
 	public void onGetDataSuccess(DataWrapper wrapper) {		
 		adapter = adapterFactory.createAdapter( wrapper.getData() );
 		listview.setAdapter( adapter );
