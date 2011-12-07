@@ -23,7 +23,6 @@ public class Helpers {
 				Contacts._ID,
 				Contacts.DISPLAY_NAME
 				 	};
-
 		Bundle bundle = new Bundle();
 		Uri contactUri = Uri.withAppendedPath(Contacts.CONTENT_FILTER_URI, Uri.encode(number));
 		Cursor cursor = cr.query(contactUri, projection, null, null, null);

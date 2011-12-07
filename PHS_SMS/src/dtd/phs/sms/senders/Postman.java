@@ -5,11 +5,11 @@ import dtd.phs.sms.data.entities.MessageItem;
 
 //TODO: All this must be called inside an service + new thread
 public class Postman 
-	implements 
-		ISMS_SendListener,
-		INormalMessageSenderListener
+implements 
+ISMS_SendListener,
+INormalMessageSenderListener
 {
-	
+
 	private SendMessageListener messageListener;
 	private Context context;
 
@@ -17,19 +17,26 @@ public class Postman
 		this.context = context;
 	}
 
-	public void sendMessage(MessageItem message, SendMessageListener listener) {
-		setListener(listener);
-		tryToSendIMessage(message);
+	public void sendMessage(MessageItem message, SendMessageListener listener, boolean forceSendNormalSMS) {
+		//TODO: ping the receiver (friend) before send "real" message, if the friend is connected then:
+		// let forceSendNormalSMS = false - The connectivity will be checked again inside the sender,
+		// but it decrease the chance user have to wait too long to send a "normal" message to a friend
+		// which doesn't use G-Message
+		if ( ! forceSendNormalSMS ) {
+			setListener(listener);
+			tryToSendIMessage(message);
+		} else {
+			tryToSendNormalMessage(message);
+		}
 	}
 
 	private void tryToSendIMessage(MessageItem message) {
-		ISMSSender iSender = new GoogleSender(this);
+		ISMSSender iSender = new GoogleSender(this, context);
 		iSender.send( message );
 	}
 	private void setListener(SendMessageListener listener) {
 		this.messageListener = listener;
 	}
-
 
 	private void tryToSendNormalMessage(MessageItem mess) {
 		INormalMessageSender sender = new AndroidSMSSender(this,context);
@@ -48,7 +55,7 @@ public class Postman
 			tryToSendNormalMessage(mess);
 		}
 	}
-	
+
 	@Override
 	public void onNormalMessageSendFailed(Object data) {
 		messageListener.onSendSuccces(data);
