@@ -27,12 +27,13 @@ public class GoogleXMPPService extends Service {
 	private static final String HOST = "talk.google.com";
 	private static final String PORT = "5222";
 	private static final String SERVICE = "googlemail.com";
-	private static final String SEPERATOR = "***";
+	private static final String SEPERATOR = "xxxoioxxx";
 	public static final String TIME_OUT_I_MESSAGE = "dtd.phs.sms.time_out";
 	public static final String TIME_STAMP = "time_stamp";
+	protected static final String I_MESSAGE_DELIVERED = "dtd.phs.sms.isms_delivered";
 	public static MessageItem messageToSend;
 	private XMPPConnection connection;
-	public HashMap<String, String> sendingButNorRepliedMessages;
+	public HashMap<String, String> waitingMessages;
 	Handler handler = new Handler();
 
 	@Override
@@ -40,13 +41,25 @@ public class GoogleXMPPService extends Service {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public void onCreate() {
 		// TODO Auto-generated method stub
 		super.onCreate();
-		sendingButNorRepliedMessages = new HashMap<String, String>();
-        createConnection();
+		waitingMessages = new HashMap<String, String>();
+		createConnection();
+	}
+
+	@Override
+	public void onDestroy() {
+		try {
+			if ( connection != null )
+				connection.disconnect();
+		} catch (Exception e) {
+			Logger.logException(e);
+		}
+
+		super.onDestroy();
 	}
 
 	private void createConnection() {
@@ -60,35 +73,60 @@ public class GoogleXMPPService extends Service {
 					if (incomingMessage.getBody() != null) {
 						String fromName = StringUtils.parseBareAddress(incomingMessage.getFrom());
 						String messageBody = incomingMessage.getBody();
-//						TODO: qadwedsad --- what to do with reply message ?
+						//						TODO: qadwedsad --- what to do with reply message ?
+						if ( isReplyMessage(messageBody)) {
+							processReplyMessage(fromName, messageBody);
+						} else {
+							processChatMessage(fromName, messageBody);
+						}
 					}
+				}
+
+				private void processReplyMessage(String fromName, String messageBody) {
+					String[] words = messageBody.trim().split(SEPERATOR);
+					String timeStamp = words[0];
+					if (waitingMessages.containsKey(timeStamp)) {
+						waitingMessages.remove(timeStamp);
+					}
+					broadcastDeliveredIntent();
+				}
+
+				private void broadcastDeliveredIntent() {
+					Intent intent = new Intent();
+					intent.setAction(I_MESSAGE_DELIVERED);
+					getApplicationContext().sendBroadcast(intent);
+				}
+
+				private boolean isReplyMessage(String messageBody) {
+					// TODO Auto-generated method stub
+					return false;
 				}
 			}, filter);
 		}
-        
+
 	}
 
 	private void login() {
 		Logger.logInfo("Create a connection !");
-        ConnectionConfiguration connConfig =
-            new ConnectionConfiguration(HOST, Integer.parseInt(PORT), SERVICE);
+		ConnectionConfiguration connConfig =
+			new ConnectionConfiguration(HOST, Integer.parseInt(PORT), SERVICE);
 		connection = new XMPPConnection(connConfig);
-        try {
-        	connection.connect();
-        } catch (XMPPException exception) {
-        	//TODO: listener
-        	Logger.logException(exception);
-        }
-        
-        try {
-        	connection.login(getUserName(), getPassword() );
-        	Logger.logInfo("Connection is created successfully !");
-        } catch (XMPPException exception) {
-        	//TODO: listener
-        	Logger.logException(exception);
-        }
+		try {
+			connection.connect();
+		} catch (XMPPException exception) {
+			//TODO: listener
+			Logger.logException(exception);
+		}
+
+		try {
+			connection.login(getUserName(), getPassword() );
+			Logger.logInfo("Connection is created successfully !");
+		} catch (XMPPException exception) {
+			//TODO: listener
+			Logger.logException(exception);
+		}
 	}
-	
+
 	private String getPassword() {
 		return "itrangdethuong";
 	}
@@ -109,7 +147,7 @@ public class GoogleXMPPService extends Service {
 		}
 		return super.onStartCommand(intent, flags, startId);
 	}
-	
+
 	public class WaitingThread extends Thread {
 		private static final long WAITING_FOR_REPLY_TIME = 3000;
 		private String startTime;
@@ -122,7 +160,7 @@ public class GoogleXMPPService extends Service {
 		public void run() {
 			try {
 				currentThread().wait(WAITING_FOR_REPLY_TIME);
-				if ( sendingButNorRepliedMessages.containsKey(startTime)) {
+				if ( waitingMessages.containsKey(startTime)) {
 					timeOut(startTime); //remove message & failed !
 				} else {
 					//already removed -> got reply already
@@ -134,12 +172,12 @@ public class GoogleXMPPService extends Service {
 	}
 
 	public void timeOut(String startTime) {
-		sendingButNorRepliedMessages.remove(startTime);
+		waitingMessages.remove(startTime);
 		Intent intent = new Intent();
 		intent.setAction(TIME_OUT_I_MESSAGE);
 		intent.putExtra(TIME_STAMP, startTime);
 		getApplicationContext().sendBroadcast(intent);
-		
+
 	}
 
 }

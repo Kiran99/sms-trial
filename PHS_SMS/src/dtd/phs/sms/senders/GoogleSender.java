@@ -20,14 +20,26 @@ public class GoogleSender implements ISMSSender {
 	public void send(MessageItem message) {
 		Intent xmppServiceIntent = new Intent(context,GoogleXMPPService.class);
 		GoogleXMPPService.messageToSend = message;
+		
+		
+		//if the message cannot be sent ontime, it does mean that it cannot be sent ! 
+		// so, sometimes there will be duplicates (sent by I-SMS, but the reply comes too late
+		// and it will be sent by normal sms manager 
+		context.registerReceiver(new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				listener.onSendIMessageFailed(null);
+			}
+		},new IntentFilter(GoogleXMPPService.TIME_OUT_I_MESSAGE));
+		
 		context.registerReceiver(new BroadcastReceiver() {
 			
 			@Override
 			public void onReceive(Context context, Intent intent) {
-				// TODO Auto-generated method stub
-				
+				listener.onSendIMessageSuccess(data);
 			}
-		},new IntentFilter(GoogleXMPPService.TIME_OUT_I_MESSAGE));
+		}, new IntentFilter(GoogleXMPPService.I_MESSAGE_DELIVERED));
+		
 		context.startService(xmppServiceIntent);
 		
 	}
