@@ -6,17 +6,19 @@
     <uses-sdk android:minSdkVersion="7" />
     <uses-permission android:name="android.permission.READ_SMS"></uses-permission>
     <uses-permission android:name="android.permission.READ_CONTACTS"></uses-permission>
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application android:icon="@drawable/icon" android:label="@string/app_name">
         <activity android:name=".ShowInbox"
                   android:label="@string/app_name">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name="ShowConversation"></activity>
         <service android:name=".senders.GoogleXMPPService"></service>
+        <activity android:name=".test.XMPP_Activity"></activity>
+        <activity android:name=".test.TestWriteSMS"><intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter></activity>
 
     </application>
 </manifest>

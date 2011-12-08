@@ -1,5 +1,9 @@
 package dtd.phs.sms.util;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -39,6 +43,20 @@ public class Helpers {
 			cursor.close();
 		}
 
+	}
+	
+	public static String hashMD5(String s) {
+		try {
+			MessageDigest m = MessageDigest.getInstance("MD5");
+			m.update(s.getBytes(), 0, s.length());
+			String result = new BigInteger(1,m.digest()).toString();
+			while (result.length() < 32 ) {
+				result = "0" + result;
+			}
+			return result;
+		} catch (NoSuchAlgorithmException e) {
+			return null;
+		}
 	}
 
 }
