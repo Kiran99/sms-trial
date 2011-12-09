@@ -1,4 +1,4 @@
-package dtd.phs.sms.senders;
+package dtd.phs.sms.message_center;
 
 import java.util.HashMap;
 

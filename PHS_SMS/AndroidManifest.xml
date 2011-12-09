@@ -24,14 +24,14 @@
         <activity android:name="ShowConversation" >
         </activity>
 
-        <service android:name=".senders.GoogleXMPPService" >
+        <service android:name=".message_center.GoogleXMPPService" >
         </service>
 
         <activity android:name=".test.XMPP_Activity" >
         </activity>
         <activity android:name=".test.TestWriteSMS" >
         </activity>
-        <activity android:name="FirstTimeScreen" >
+        <activity android:name=".FirstTimeScreen" >
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
 
@@ -39,7 +39,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".senders.NormalSMSReceiver" >
+        <receiver android:name=".message_center.NormalSMSReceiver" >
             <intent-filter >
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
                 <action android:name="dtd.phs.sms.isms_received" />

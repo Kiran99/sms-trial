@@ -16,7 +16,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import dtd.phs.sms.R;
 import dtd.phs.sms.data.entities.MessageItem;
-import dtd.phs.sms.senders.GoogleXMPPService;
+import dtd.phs.sms.message_center.GoogleXMPPService;
 import dtd.phs.sms.util.Logger;
 
 public class XMPP_Activity extends Activity {

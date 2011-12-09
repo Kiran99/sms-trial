@@ -1,6 +1,6 @@
 package dtd.phs.sms.data.entities;
 
-import dtd.phs.sms.senders.AndroidSMSSender.ResultCode;
+import dtd.phs.sms.message_center.AndroidSMSSender.ResultCode;
 
 
 public class MessageItem {
