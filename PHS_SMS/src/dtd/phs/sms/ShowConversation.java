@@ -1,9 +1,11 @@
 package dtd.phs.sms;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.security.KeyStore.LoadStoreParameter;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -19,16 +21,51 @@ import dtd.phs.sms.data.DataWrapper;
 import dtd.phs.sms.data.IDataGetter;
 import dtd.phs.sms.data.IListFactory;
 import dtd.phs.sms.data.MessagesFactory;
+import dtd.phs.sms.data.entities.MessageItem;
 import dtd.phs.sms.data.entities.SMSItem;
-import dtd.phs.sms.data.entities.SMSList;
-import dtd.phs.sms.global.ThreadPools;
+import dtd.phs.sms.message_center.NormalSMSReceiver;
+import dtd.phs.sms.message_center.Postman;
+import dtd.phs.sms.message_center.SendMessageListener;
+import dtd.phs.sms.util.Helpers;
 import dtd.phs.sms.util.Logger;
 
 
 public class ShowConversation
 extends PHS_SMSActivity
-implements IDataGetter
+implements IDataGetter, SendMessageListener
 {
+
+
+	
+	private final class BeingSentMessageReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			listview.post(new Runnable() {
+				@Override
+				public void run() {
+					requestMessages();
+				}
+			});
+		}
+	}
+
+	public class IncomingMessageReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Helpers.runAfterWaiting(new Runnable() {
+				@Override
+				public void run() {
+					listview.post(new Runnable() {
+						@Override
+						public void run() {
+							requestMessages();							
+						}
+					});
+				}
+			},NormalSMSReceiver.WAIT_BEFORE_REFRESH);					
+		}
+
+	}
 
 
 	public static final String INPUT_BUNDLE = "input_bundle";
@@ -48,6 +85,9 @@ implements IDataGetter
 	private IListFactory adapterFactory;
 	private BaseAdapter adapter;
 	private String passedContactNumber;
+	private IncomingMessageReceiver incomingMessageReceiver;
+	private Postman postman;
+	private BeingSentMessageReceiver beingSentMessageReceiver;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -56,15 +96,31 @@ implements IDataGetter
 		setContentView(R.layout.show_conversation);
 		adapterFactory = new MessagesFactory();
 		extractInputData();
-		bindViews();	    	    
+		bindViews();
+		postman = new Postman(getApplicationContext());
 	}
 
 	@Override
 	protected void onResume() {	
 		super.onResume();
 		requestMessages();
+		
+		incomingMessageReceiver = new IncomingMessageReceiver();
+		registerReceiver(incomingMessageReceiver, new IntentFilter(NormalSMSReceiver.GENERAL_MESSAGE_RECEIVED));
+		
+		beingSentMessageReceiver = new BeingSentMessageReceiver();
+		registerReceiver(beingSentMessageReceiver, new IntentFilter(Postman.GENERAL_BEING_SENT_EVENT));
+		
+		postman.startInternetPostman();
 	}
 
+	@Override
+	protected void onPause() {
+		unregisterReceiver(incomingMessageReceiver);
+		unregisterReceiver(beingSentMessageReceiver);
+		super.onPause();
+	}
+	
 	private void extractInputData() {
 		Intent srcIntent = getIntent();
 		Bundle bundleExtra = srcIntent.getBundleExtra(INPUT_BUNDLE);
@@ -207,9 +263,30 @@ implements IDataGetter
 		public void onClick(View v) {
 			String message = etMessage.getText().toString();
 			if ( message != null && message.length() > 0 ) {
+				MessageItem mess = new MessageItem();
+				//TODO: multiple numbers
+				String number = tvNumber.getText().toString();
+				mess.setNumber(number);
+				mess.setContent(message);
+				mess.setId(""+System.currentTimeMillis());
+				postman.sendMessage(mess, ShowConversation.this, false);
 				
 			}
 		}
+	}
+
+
+	@Override
+	public void onSendFailed(Object data) {
+		//TODO: later
+		Helpers.showToast(getApplicationContext(),"Send failed !");
+	}
+
+	@Override
+	public void onSendSuccces(Object data) {
+		// TODO Auto-generated method stub
+		Helpers.showToast(getApplicationContext(),"Send success !");
+		
 	}
 
 }

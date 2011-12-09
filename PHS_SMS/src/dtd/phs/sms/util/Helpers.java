@@ -4,6 +4,8 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import dtd.phs.sms.message_center.GoogleXMPPService;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -13,6 +15,7 @@ import android.provider.ContactsContract.Contacts;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 public class Helpers {
 
@@ -80,7 +83,7 @@ public class Helpers {
 		} else {
 			return null;
 		}
-		return username;
+		return username + "@gmail.com";
 	}
 
 	public static String revertUsername2PhoneNumber(String stringExtra) {
@@ -93,6 +96,29 @@ public class Helpers {
 	private static String getCountryCode() {
 		// TODO method stub
 		return "84"; //VN code		
+	}
+
+	public static void runAfterWaiting(final Runnable work,final long milis) {
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				Integer lock = new Integer(1);
+				synchronized (lock) {
+					try {
+						lock.wait(milis);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					work.run();
+				}
+			}
+		}).start();
+	}
+
+	public static void showToast(Context context, String mess) {
+		Toast.makeText(context, mess, Toast.LENGTH_LONG).show();		
 	}
 
 

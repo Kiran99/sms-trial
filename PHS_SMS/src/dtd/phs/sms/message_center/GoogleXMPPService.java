@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import dtd.phs.sms.data.entities.MessageItem;
+import dtd.phs.sms.util.Helpers;
 import dtd.phs.sms.util.Logger;
 import dtd.phs.sms.util.PreferenceHelpers;
 
@@ -29,7 +30,7 @@ public class GoogleXMPPService extends Service {
 
 	private static final String HOST = "talk.google.com";
 	private static final String PORT = "5222";
-	private static final String SERVICE = "gmail.com";
+	public static final String SERVICE = "gmail.com";
 	private static final String SEPERATOR = " xtuoioutx ";
 	private static final String PONG_MESSAGE = "6fdb087aa3fbfbcb"; //pong[0..15]
 	private static final String PING_MESSAGE = "df911f0151f9ef02"; //ping[0..15]
@@ -242,8 +243,10 @@ public class GoogleXMPPService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		if ( messageToSend != null ) {
+			String username = messageToSend.getNumber();
+			username = Helpers.generateUsernameFromPhoneNumber(username);
 			sendMessage(
-					messageToSend.getNumber(), 
+					username,
 					""+ messageToSend.getID() + SEPERATOR + messageToSend.getContent());
 			//			Message msg = new Message(messageToSend.getNumber(), Message.Type.chat);
 			//			msg.setBody(""+ messageToSend.getId() + SEPERATOR + messageToSend.getContent());

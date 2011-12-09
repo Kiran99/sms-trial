@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import dtd.phs.sms.test.XMPP_Activity;
 import dtd.phs.sms.util.Helpers;
 import dtd.phs.sms.util.PreferenceHelpers;
 
@@ -34,7 +33,7 @@ public class FirstTimeScreen extends PHS_SMSActivity {
 		} 
 	}
 	private void showInbox() {
-		Intent intent = new Intent(getApplicationContext(), XMPP_Activity.class);
+		Intent intent = new Intent(getApplicationContext(), ShowInbox.class);
 		startActivity(intent);
 	}
 

@@ -21,7 +21,7 @@ public class GoogleSender implements ISMSSender {
 	public void send(final MessageItem message) {
 		Intent xmppServiceIntent = new Intent(context,GoogleXMPPService.class);
 		long currentTime = System.currentTimeMillis();
-		message.setId(""+currentTime);
+		message.setId(""+currentTime);		
 		GoogleXMPPService.messageToSend = message;
 
 
@@ -77,6 +77,13 @@ public class GoogleSender implements ISMSSender {
 
 		context.startService(xmppServiceIntent);
 
+	}
+
+	@Override
+	public void startInternetPostmanService(Context context) {
+		Intent i = new Intent(context, GoogleXMPPService.class);
+		GoogleXMPPService.messageToSend = null;
+		context.startService(i);
 	}
 
 }

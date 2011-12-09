@@ -14,6 +14,7 @@ public class NormalSMSReceiver extends BroadcastReceiver {
 
 	private static final String ANDROID_SMS_RECEIVE_ACTION = "android.provider.Telephony.SMS_RECEIVED";
 	public static final String  GENERAL_MESSAGE_RECEIVED = "dtd.phs.gsms.general_message.received";
+	public static final long WAIT_BEFORE_REFRESH = 1000;
 
 	@Override
 	public void onReceive(final Context context, final Intent intent) {
