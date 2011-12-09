@@ -248,6 +248,8 @@ public class GoogleXMPPService extends Service {
 
 			WaitingThread wt = new WaitingThread(Long.parseLong(messageToSend.getID()));
 			wt.start();
+		} else {
+			Logger.logInfo("Message to send is NULL");
 		}
 		return super.onStartCommand(intent, flags, startId);
 	}
