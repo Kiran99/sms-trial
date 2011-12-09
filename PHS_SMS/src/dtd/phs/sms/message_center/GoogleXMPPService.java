@@ -63,14 +63,17 @@ public class GoogleXMPPService extends Service {
 	public void onCreate() {
 		super.onCreate();
 		waitingMessages = new HashMap<String, String>();
+		Logger.logInfo("GoogleXMPP service is created !");
 		createConnection();
 	}
 
 	@Override
 	public void onDestroy() {
 		try {
-			if ( connection != null )
+			if ( connection != null ) {
+				Logger.logInfo("Connection is disconnected !");
 				connection.disconnect();
+			}
 		} catch (Exception e) {
 			Logger.logException(e);
 		}
