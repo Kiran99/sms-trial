@@ -42,7 +42,10 @@ INormalMessageSenderListener
 		INormalMessageSender sender = new AndroidSMSSender(this,context);
 		sender.send( mess );
 	}
-
+	/**
+	 * I-MESSAGE - Interface: ISMS_SendListener
+	 * BEGIN
+	 */
 	@Override
 	public void onSendIMessageSuccess(Object data) {
 		messageListener.onSendSuccces(data);
@@ -55,7 +58,13 @@ INormalMessageSenderListener
 			tryToSendNormalMessage(mess);
 		}
 	}
+	
+	/**
+	 * END
+	 * I-MESSAGE - Interface: ISMS_SendListener
+	 */
 
+	
 	@Override
 	public void onNormalMessageSendFailed(Object data) {
 		messageListener.onSendSuccces(data);
@@ -65,5 +74,6 @@ INormalMessageSenderListener
 	public void onNormalMessageSendSuccess(Object data) {
 		messageListener.onSendFailed( data );
 	}
+
 
 }

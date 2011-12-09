@@ -8,7 +8,7 @@ public class MessageItem {
 	private ResultCode resultCode;
 	private String number;
 	private String content;
-	private String timeStamp;
+	private String id;
 
 	public ContactItem getContact() {
 		// TODO Auto-generated method stub
@@ -35,12 +35,12 @@ public class MessageItem {
 		this.content = content;
 	}
 
-	public void setTimeStamp(String timeStamp) {
-		this.timeStamp = timeStamp;
+	public void setId(String id) {
+		this.id = id;
 	}
 	
-	public String getTimeStamp() {
-		return timeStamp;
+	public String getID() {
+		return id;
 	}
 
 }

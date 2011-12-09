@@ -10,8 +10,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract.Contacts;
-import android.provider.ContactsContract.RawContacts;
-import android.provider.ContactsContract.RawContactsEntity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,7 +68,7 @@ public class Helpers {
 	 * @param rawNumber
 	 * @return username - null if the number is invalid
 	 */
-	public static String generateUsername(String rawNumber) {
+	public static String generateUsernameFromPhoneNumber(String rawNumber) {
 		int indexDoubleZero = rawNumber.indexOf("00");
 		String username = "";
 		if ( indexDoubleZero == 0 ) {
@@ -85,9 +83,17 @@ public class Helpers {
 		return username;
 	}
 
+	public static String revertUsername2PhoneNumber(String stringExtra) {
+		//TODO: later
+		String number = stringExtra.replace('p', '+');
+		return number.substring(0,number.indexOf('@'));
+	}
+
+
 	private static String getCountryCode() {
 		// TODO method stub
 		return "84"; //VN code		
 	}
+
 
 }

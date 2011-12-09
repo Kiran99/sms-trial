@@ -49,7 +49,7 @@ public class FirstTimeScreen extends PHS_SMSActivity {
 		btOk.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				String username = Helpers.generateUsername(etPhone.getText().toString());
+				String username = Helpers.generateUsernameFromPhoneNumber(etPhone.getText().toString());
 				String password = Helpers.generatePassword(username);
 				PreferenceHelpers.saveAccount(getApplicationContext(),username,password);
 				showInbox();

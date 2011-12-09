@@ -17,9 +17,19 @@ import android.widget.ListView;
 import dtd.phs.sms.R;
 import dtd.phs.sms.data.entities.MessageItem;
 import dtd.phs.sms.senders.GoogleXMPPService;
+import dtd.phs.sms.util.Logger;
 
 public class XMPP_Activity extends Activity {
 
+	private final class MessageReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String from  = intent.getStringExtra(GoogleXMPPService.EXTRA_SENDER);
+			String body = intent.getStringExtra(GoogleXMPPService.EXTRA_MESSAGE_BODY);
+			adapter.add(from+": " + body);
+			adapter.notifyDataSetChanged();
+		}
+	}
 	public static final String VO_GMAIL_ACC = "huongdoan12345@gmail.com";
 	public static final String ME_GMAIL_ACC = "sphamhung@googlemail.com";
 	
@@ -28,6 +38,8 @@ public class XMPP_Activity extends Activity {
 	private Button btSend;
 	protected ArrayList<String> displayedMessages;
 	private ArrayAdapter<String> adapter;
+	private MessageReceiver messageReceiver;
+	private EditText etNumber;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -38,21 +50,19 @@ public class XMPP_Activity extends Activity {
 	    lvMessages = (ListView) findViewById(R.id.lvMessages);
 	    displayedMessages = new ArrayList<String>();
 	    adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, displayedMessages);
-	    lvMessages.setAdapter(adapter);
-	    
+	    lvMessages.setAdapter(adapter);	    
 	    etMessage = (EditText) findViewById(R.id.etMessage);
+	    etNumber = (EditText) findViewById(R.id.etPhoneNumber);
 	    
 	    createButtonSend();
 
-		registerReceiver(new BroadcastReceiver() {
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				String from  = intent.getStringExtra(GoogleXMPPService.EXTRA_SENDER);
-				String body = intent.getStringExtra(GoogleXMPPService.EXTRA_MESSAGE_BODY);
-				adapter.add(from+": " + body);
-				adapter.notifyDataSetChanged();
-			}
-		}, new IntentFilter(GoogleXMPPService.I_MESSAGE_RECEIVED));
+	    registerReceivers();
+		
+	}
+
+	private void registerReceivers() {
+		messageReceiver = new MessageReceiver();
+		registerReceiver(messageReceiver, new IntentFilter(GoogleXMPPService.I_MESSAGE_RECEIVED));		
 	}
 
 	private void createButtonSend() {
@@ -64,8 +74,9 @@ public class XMPP_Activity extends Activity {
 				String message = etMessage.getText().toString();
 				if (message.length() != 0 ) {
 					MessageItem mess = new MessageItem();
-					mess.setNumber(VO_GMAIL_ACC);
+					mess.setNumber(etNumber.getText().toString()+"@gmail.com");
 					mess.setContent(message);
+					mess.setId(""+System.currentTimeMillis());
 					GoogleXMPPService.messageToSend = mess;
 					startService(new Intent(XMPP_Activity.this, GoogleXMPPService.class));
 					displayedMessages.add("Me: " + mess.getContent());
@@ -79,6 +90,9 @@ public class XMPP_Activity extends Activity {
 	
 	@Override
 	protected void onDestroy() {
+		Logger.logInfo("XMPP_Activity.onDestroy() is called ");
+		unregisterReceiver(messageReceiver);
+		
 		stopService(new Intent(this,GoogleXMPPService.class));
 		super.onDestroy();
 	}
