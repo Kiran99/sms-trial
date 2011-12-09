@@ -47,7 +47,7 @@ public class GoogleSender implements ISMSSender {
 					break;
 				}
 
-				listener.onSendIMessageFailed(new Integer(errorCode));
+				listener.onSendIMessageFailed(message);
 
 			}
 		},new IntentFilter(GoogleXMPPService.XMPP_FAILURE));
