@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.READ_SMS"></uses-permission>
     <uses-permission android:name="android.permission.READ_CONTACTS"></uses-permission>
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_SMS"/>
 
     <application android:icon="@drawable/icon" android:label="@string/app_name">
         <activity android:name=".ShowInbox"
@@ -14,8 +15,13 @@
         </activity>
         <activity android:name="ShowConversation"></activity>
         <service android:name=".senders.GoogleXMPPService"></service>
-        <activity android:name=".test.XMPP_Activity"></activity>
-        <activity android:name=".test.TestWriteSMS"><intent-filter>
+        <activity android:name=".test.XMPP_Activity">
+          
+            </activity>
+        <activity android:name=".test.TestWriteSMS">
+            
+        </activity>
+        <activity android:name="FirstTimeScreen"><intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter></activity>

@@ -10,6 +10,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract.Contacts;
+import android.provider.ContactsContract.RawContacts;
+import android.provider.ContactsContract.RawContactsEntity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +28,7 @@ public class Helpers {
 		String[] projection = new String[] {
 				Contacts._ID,
 				Contacts.DISPLAY_NAME
-				 	};
+		};
 		Bundle bundle = new Bundle();
 		Uri contactUri = Uri.withAppendedPath(Contacts.CONTENT_FILTER_URI, Uri.encode(number));
 		Cursor cursor = cr.query(contactUri, projection, null, null, null);
@@ -44,7 +46,7 @@ public class Helpers {
 		}
 
 	}
-	
+
 	public static String hashMD5(String s) {
 		try {
 			MessageDigest m = MessageDigest.getInstance("MD5");
@@ -57,6 +59,35 @@ public class Helpers {
 		} catch (NoSuchAlgorithmException e) {
 			return null;
 		}
+	}
+
+	public static String generatePassword(String username) {
+		return username + "@";
+	}
+
+	/**
+	 * 
+	 * @param rawNumber
+	 * @return username - null if the number is invalid
+	 */
+	public static String generateUsername(String rawNumber) {
+		int indexDoubleZero = rawNumber.indexOf("00");
+		String username = "";
+		if ( indexDoubleZero == 0 ) {
+			username = "p"+rawNumber.substring(2);
+		} else if (rawNumber.charAt(0)=='+') {
+			username = "p" + rawNumber.substring(1);
+		} else if (rawNumber.charAt(0) == '0') {
+			username = "p"+ getCountryCode() + rawNumber.substring(1);  
+		} else {
+			return null;
+		}
+		return username;
+	}
+
+	private static String getCountryCode() {
+		// TODO method stub
+		return "84"; //VN code		
 	}
 
 }

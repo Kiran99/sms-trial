@@ -19,6 +19,7 @@ import android.os.IBinder;
 import dtd.phs.sms.data.entities.MessageItem;
 import dtd.phs.sms.test.XMPP_Activity;
 import dtd.phs.sms.util.Logger;
+import dtd.phs.sms.util.PreferenceHelpers;
 
 public class GoogleXMPPService extends Service {
 
@@ -199,12 +200,14 @@ public class GoogleXMPPService extends Service {
 
 	private String getPassword() {
 		//TODO: later
-		return XMPP_Activity.ME_GMAIL_PWD;
+//		return XMPP_Activity.ME_GMAIL_PWD;
+		return PreferenceHelpers.getPassword(getApplicationContext());
 	}
 
 	private String getUserName() {
 		//TODO: later
-		return XMPP_Activity.ME_GMAIL_ACC;
+//		return XMPP_Activity.ME_GMAIL_ACC;
+		return PreferenceHelpers.getUsername(getApplicationContext());
 	}
 
 	@Override
