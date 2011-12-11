@@ -1,7 +1,5 @@
 package dtd.phs.sms;
 
-import java.security.KeyStore.LoadStoreParameter;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -97,7 +95,7 @@ implements IDataGetter, SendMessageListener
 		adapterFactory = new MessagesFactory();
 		extractInputData();
 		bindViews();
-		postman = new Postman(getApplicationContext());
+		postman = Postman.getInstance(getApplicationContext());
 	}
 
 	@Override

@@ -22,7 +22,7 @@ public class GoogleSender implements ISMSSender {
 	public void send(final MessageItem message) {
 		Intent xmppServiceIntent = new Intent(context,GoogleXMPPService.class);
 		long currentTime = System.currentTimeMillis();
-		message.setId(""+currentTime);		
+//		message.setId(""+currentTime);		
 		GoogleXMPPService.messageToSend = message;
 
 
@@ -35,7 +35,7 @@ public class GoogleSender implements ISMSSender {
 			public void onReceive(Context context, Intent intent) {
 				int errorCode = intent.getIntExtra(GoogleXMPPService.ERROR_CODE, GoogleXMPPService.UNKNOWN_ERROR);
 
-				//TODO:
+				//TODO: Unregister listener for message that's send OR not sent !
 				switch (errorCode) {
 				case GoogleXMPPService.CONNECTION_ERROR:
 					message.setResultCode(ResultCode.I_CONNECTION_ERROR);
@@ -45,13 +45,17 @@ public class GoogleSender implements ISMSSender {
 					break;
 				case GoogleXMPPService.I_MESSAGE_TIME_OUT:
 					Logger.logInfo("Time out !");
-					message.setResultCode(ResultCode.I_MESSAGE_TIME_OUT);
+					if ( message.getID().equals(intent.getStringExtra(GoogleXMPPService.EXTRA_MESSAGE_ID))) {
+						Logger.logInfo("Timeout published !");
+						message.setResultCode(ResultCode.I_MESSAGE_TIME_OUT);
+						listener.onSendIMessageFailed(message);
+					}
 					break;
 				case GoogleXMPPService.UNKNOWN_ERROR:
 					message.setResultCode(ResultCode.I_MESSAGE_UNKNOWN);
 					break;
 				}
-				listener.onSendIMessageFailed(message);
+				context.unregisterReceiver(this);
 			}
 		},new IntentFilter(GoogleXMPPService.XMPP_FAILURE));
 

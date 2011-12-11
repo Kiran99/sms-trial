@@ -17,15 +17,23 @@ INormalMessageSenderListener
 {
 
 	public static final String GENERAL_BEING_SENT_EVENT = "dtd.phs.sms.sms_being_sent";
+	private static Postman instance;
 	private SendMessageListener messageListener;
 	private ISMSSender iSender;
 	private INormalMessageSender sender;
 	private Context context;
 
-	public Postman(Context context) {
+	private Postman(Context context) {
 		this.context = context;
 		iSender = new GoogleSender(this, context);
 		sender = new AndroidSMSSender(this,context);
+	}
+	
+	public static Postman getInstance(Context context) {
+		if (instance == null) {
+			instance = new Postman(context);			
+		}
+		return instance;
 	}
 
 	public void sendMessage(MessageItem message, SendMessageListener listener, boolean forceSendNormalSMS) {

@@ -125,9 +125,9 @@ public class GoogleXMPPService extends Service {
 					String[] words = messageBody.trim().split(SEPERATOR);
 					String id = words[0];
 					synchronized ( waitingMessages ) {
-						Logger.logInfo("PONG MESSAGE RECEIVED - ID: " + id);
+						Logger.logInfo("PONG MESSAGE RECEIVED - ID:--" + id+"--");
 						if (waitingMessages.containsKey(id)) {
-							Logger.logInfo("Remove the message with ID: " + id);
+							Logger.logInfo("Remove the message with ID:--" + id+"--");
 							waitingMessages.remove(id);
 							broadcastDeliveredIntent(id);
 						}
@@ -280,8 +280,8 @@ public class GoogleXMPPService extends Service {
 		@Override
 		public void run() {
 			try {				
-				synchronized (waitingMessages) {
-					waitingMessages.wait(WAITING_FOR_REPLY_TIME);
+				synchronized (this) {
+					this.wait(WAITING_FOR_REPLY_TIME);
 					if ( waitingMessages.containsKey(id)) {
 						Logger.logInfo("Message with id: [" + id + "] is still waiting");
 						timeOut(id); //remove message & failed !
@@ -300,7 +300,9 @@ public class GoogleXMPPService extends Service {
 	public void timeOut(String id) {
 
 		Logger.logInfo("Time out !");
-		waitingMessages.remove(id);
+		synchronized (waitingMessages) {
+			waitingMessages.remove(id);
+		}
 		Intent intent = new Intent();
 		intent.setAction(XMPP_FAILURE);
 		intent.putExtra(ERROR_CODE, I_MESSAGE_TIME_OUT);
