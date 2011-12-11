@@ -284,6 +284,9 @@ implements IDataGetter, SendMessageListener
 	@Override
 	public void onSendSuccces(Object data) {
 		// TODO Auto-generated method stub
+		// This one is published multiple times for just one success message
+		// why ? because there are alot receiver for "DELIVERED" - which is not nice ! 
+		// In fact: wastful & wrong
 		Helpers.showToast(getApplicationContext(),"Send success !");
 		
 	}
