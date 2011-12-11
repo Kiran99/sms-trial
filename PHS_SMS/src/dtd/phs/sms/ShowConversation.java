@@ -111,6 +111,7 @@ implements IDataGetter, SendMessageListener
 		beingSentMessageReceiver = new BeingSentMessageReceiver();
 		registerReceiver(beingSentMessageReceiver, new IntentFilter(Postman.GENERAL_BEING_SENT_EVENT));
 		
+
 		postman.startInternetPostman();
 	}
 

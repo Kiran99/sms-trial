@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import dtd.phs.sms.data.entities.MessageItem;
+import dtd.phs.sms.message_center.AndroidSMSSender.ResultCode;
 import dtd.phs.sms.util.Logger;
 
 public class GoogleSender implements ISMSSender {
@@ -36,19 +37,21 @@ public class GoogleSender implements ISMSSender {
 
 				//TODO:
 				switch (errorCode) {
-				case GoogleXMPPService.CONNECTION_ERROR:					
+				case GoogleXMPPService.CONNECTION_ERROR:
+					message.setResultCode(ResultCode.I_CONNECTION_ERROR);
 					break;
 				case GoogleXMPPService.AUTHENTICATION_ERROR:
+					message.setResultCode(ResultCode.I_AUTHENTICATION_ERROR);
 					break;
 				case GoogleXMPPService.I_MESSAGE_TIME_OUT:
 					Logger.logInfo("Time out !");
+					message.setResultCode(ResultCode.I_MESSAGE_TIME_OUT);
 					break;
 				case GoogleXMPPService.UNKNOWN_ERROR:
+					message.setResultCode(ResultCode.I_MESSAGE_UNKNOWN);
 					break;
 				}
-
 				listener.onSendIMessageFailed(message);
-
 			}
 		},new IntentFilter(GoogleXMPPService.XMPP_FAILURE));
 

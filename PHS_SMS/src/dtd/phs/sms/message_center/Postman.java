@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.net.Uri;
 import dtd.phs.sms.data.entities.MessageItem;
 import dtd.phs.sms.data.entities.SMSItem;
+import dtd.phs.sms.message_center.AndroidSMSSender.ResultCode;
+import dtd.phs.sms.util.Logger;
 
 //TODO: All this must be called inside an service + new thread
 public class Postman 
@@ -59,7 +61,7 @@ INormalMessageSenderListener
 	}
 
 	private void tryToSendIMessage(MessageItem message) {
-		
+
 		iSender.send( message );
 	}
 	private void setListener(SendMessageListener listener) {
@@ -67,7 +69,7 @@ INormalMessageSenderListener
 	}
 
 	private void tryToSendNormalMessage(MessageItem mess) {
-		
+
 		sender.send( mess );
 	}
 	/**
@@ -83,24 +85,32 @@ INormalMessageSenderListener
 	public void onSendIMessageFailed(Object data) {
 		if ( data instanceof MessageItem ) {
 			MessageItem mess = (MessageItem) data;
-			tryToSendNormalMessage(mess);
+			ResultCode errorCode = mess.getResultCode();
+			if ( errorCode == ResultCode.I_MESSAGE_TIME_OUT ) {
+				if ( ! mess.isPingMessage() ) { 
+					tryToSendNormalMessage(mess);
+				} else {
+					//TODO:
+					Logger.logInfo("TODO: process ping message");
+				}
+			}
 		}
 	}
-	
+
 	/**
 	 * END
 	 * I-MESSAGE - Interface: ISMS_SendListener
 	 */
 
-	
+
 	@Override
 	public void onNormalMessageSendFailed(Object data) {
-		messageListener.onSendSuccces(data);
+		messageListener.onSendFailed( data );
 	}
 
 	@Override
 	public void onNormalMessageSendSuccess(Object data) {
-		messageListener.onSendFailed( data );
+		messageListener.onSendSuccces(data);
 	}
 
 	public void startInternetPostman() {

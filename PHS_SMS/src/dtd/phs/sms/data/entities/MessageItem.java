@@ -43,4 +43,13 @@ public class MessageItem {
 		return id;
 	}
 
+	public ResultCode getResultCode() {
+		return resultCode;
+	}
+
+	public boolean isPingMessage() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

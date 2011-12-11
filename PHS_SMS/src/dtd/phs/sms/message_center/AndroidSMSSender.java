@@ -15,7 +15,11 @@ public class AndroidSMSSender implements INormalMessageSender {
 	private Context context;
 	static private final String SENT = "SMS_SENT";
 	static private final String DELIVERED = "SMS_DELIVERED";
-	public enum ResultCode {DELIVERED,SENT,FAILED, GENERIC_FAILURE, NO_SERVICE, NULL_PDU, RADIO_OFF};
+	public enum ResultCode {
+		DELIVERED,SENT,FAILED, GENERIC_FAILURE, 
+		NO_SERVICE, NULL_PDU, RADIO_OFF, 
+		I_CONNECTION_ERROR, I_AUTHENTICATION_ERROR, 
+		I_MESSAGE_TIME_OUT, I_MESSAGE_UNKNOWN};
 	
 
 	public AndroidSMSSender(INormalMessageSenderListener listener,Context context) {

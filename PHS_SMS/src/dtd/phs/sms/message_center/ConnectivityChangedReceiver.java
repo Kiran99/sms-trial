@@ -1,5 +1,6 @@
 package dtd.phs.sms.message_center;
 
+import dtd.phs.sms.util.Helpers;
 import dtd.phs.sms.util.Logger;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,11 +13,7 @@ public class ConnectivityChangedReceiver extends BroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {
 	    // TODO Auto-generated method stub
 		Logger.logInfo("Network state changed !");
-		ConnectivityManager conMgr = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);		
-		boolean connected = (   
-				conMgr.getActiveNetworkInfo() != null &&
-	            conMgr.getActiveNetworkInfo().isAvailable() &&
-	            conMgr.getActiveNetworkInfo().isConnected()   );
+		boolean connected = Helpers.isConnectedToInternet(context);
 		Intent i = new Intent(context,GoogleXMPPService.class);
 		GoogleXMPPService.messageToSend = null;
 		if ( connected ) {

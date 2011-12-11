@@ -9,6 +9,7 @@ import dtd.phs.sms.message_center.GoogleXMPPService;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract.Contacts;
@@ -83,7 +84,7 @@ public class Helpers {
 		} else {
 			return null;
 		}
-		return username + "@gmail.com";
+		return username;
 	}
 
 	public static String revertUsername2PhoneNumber(String stringExtra) {
@@ -100,7 +101,7 @@ public class Helpers {
 
 	public static void runAfterWaiting(final Runnable work,final long milis) {
 		new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				Integer lock = new Integer(1);
@@ -119,6 +120,15 @@ public class Helpers {
 
 	public static void showToast(Context context, String mess) {
 		Toast.makeText(context, mess, Toast.LENGTH_LONG).show();		
+	}
+
+	public static boolean isConnectedToInternet(Context context) {
+		ConnectivityManager conMgr = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);		
+		boolean connected = (   
+				conMgr.getActiveNetworkInfo() != null &&
+				conMgr.getActiveNetworkInfo().isAvailable() &&
+				conMgr.getActiveNetworkInfo().isConnected()   );	
+		return connected;
 	}
 
 

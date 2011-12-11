@@ -142,6 +142,7 @@ public class GoogleXMPPService extends Service {
 				}
 
 				private boolean isDeliveryStatusMessage(String messageBody) {
+					Logger.logInfo("Inside isDelivery - meesage: " + messageBody);
 					String[] words = messageBody.split(SEPERATOR);
 					if (words.length == 2 && words[1].equals(PONG_MESSAGE)) 
 						return true;
@@ -202,23 +203,29 @@ public class GoogleXMPPService extends Service {
 		connection = new XMPPConnection(connConfig);
 
 		boolean connected = false;
-		try {
-			connection.connect();
-			connected = true;
-		} catch (XMPPException exception) {			
-			Logger.logException(exception);
-			broadcastFailure(CONNECTION_ERROR);
-		}
-
-		if ( connected ) {
+		if ( Helpers.isConnectedToInternet(getApplicationContext())) {
 			try {
-				Logger.logInfo(getUserName()+" -- " + getPassword());
-				connection.login(getUserName(), getPassword() );
-				Logger.logInfo("Connection is created successfully !");
-			} catch (XMPPException exception) {
+				connection.connect();
+				connected = true;
+			} catch (XMPPException exception) {			
 				Logger.logException(exception);
-				broadcastFailure(AUTHENTICATION_ERROR);
+				broadcastFailure(CONNECTION_ERROR);
 			}
+
+			if ( connected ) {
+				try {
+					Logger.logInfo(getUserName()+" -- " + getPassword());
+					connection.login(getUserName(), getPassword() );
+					Logger.logInfo("Connection is created successfully !");
+				} catch (XMPPException exception) {
+					Logger.logException(exception);
+					broadcastFailure(AUTHENTICATION_ERROR);
+				}
+			}
+			
+		} else {
+			Logger.logInfo("Not connected to Internet");
+			broadcastFailure(CONNECTION_ERROR);
 		}
 	}
 
@@ -244,13 +251,15 @@ public class GoogleXMPPService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		if ( messageToSend != null ) {
 			String username = messageToSend.getNumber();
-			username = Helpers.generateUsernameFromPhoneNumber(username);
+			username = Helpers.generateUsernameFromPhoneNumber(username)+"@"+SERVICE;
+			Logger.logInfo("Message id to send:--" + messageToSend.getID()+"--");
+			waitingMessages.put(messageToSend.getID(), "");
 			sendMessage(
 					username,
 					""+ messageToSend.getID() + SEPERATOR + messageToSend.getContent());
 			//			Message msg = new Message(messageToSend.getNumber(), Message.Type.chat);
 			//			msg.setBody(""+ messageToSend.getId() + SEPERATOR + messageToSend.getContent());
-			waitingMessages.put(messageToSend.getID(), "");
+
 
 			WaitingThread wt = new WaitingThread(Long.parseLong(messageToSend.getID()));
 			wt.start();
@@ -274,10 +283,10 @@ public class GoogleXMPPService extends Service {
 				synchronized (waitingMessages) {
 					waitingMessages.wait(WAITING_FOR_REPLY_TIME);
 					if ( waitingMessages.containsKey(id)) {
-						Logger.logInfo("Message with id: [" + id + " ] is still waiting");
+						Logger.logInfo("Message with id: [" + id + "] is still waiting");
 						timeOut(id); //remove message & failed !
 					} else {
-						Logger.logInfo("No message with id: [" + id + " ] is waiting anymore ");
+						Logger.logInfo("No message with id: [" + id + "] is waiting anymore ");
 					}
 				}
 			} catch (InterruptedException e) {
@@ -288,14 +297,14 @@ public class GoogleXMPPService extends Service {
 		}
 	}
 
-	public void timeOut(String startTime) {
+	public void timeOut(String id) {
 
 		Logger.logInfo("Time out !");
-		waitingMessages.remove(startTime);
+		waitingMessages.remove(id);
 		Intent intent = new Intent();
 		intent.setAction(XMPP_FAILURE);
 		intent.putExtra(ERROR_CODE, I_MESSAGE_TIME_OUT);
-		intent.putExtra(EXTRA_MESSAGE_ID, startTime);
+		intent.putExtra(EXTRA_MESSAGE_ID, id);
 		getApplicationContext().sendBroadcast(intent);
 
 	}
