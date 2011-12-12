@@ -59,6 +59,7 @@ INormalMessageSenderListener
 	private void saveSentMessage(MessageItem message) {
 		ContentValues values = new ContentValues();
 		values.put(SMSItem.ADDRESS, message.getNumber());
+		values.put(SMSItem.TYPE,""+SMSItem.MESSAGE_TYPE_SENT);
 		values.put(SMSItem.PERSON_ID,"0");
 		values.put(SMSItem.BODY, message.getContent());
 		context.getContentResolver().insert(Uri.parse("content://sms/inbox"), values );

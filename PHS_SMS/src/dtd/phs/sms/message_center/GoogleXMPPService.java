@@ -270,7 +270,7 @@ public class GoogleXMPPService extends Service {
 	}
 
 	public class WaitingThread extends Thread {
-		private static final long WAITING_FOR_REPLY_TIME = 3000;
+		private static final long WAITING_FOR_REPLY_TIME = 1000;
 		private String id;
 
 		public WaitingThread(long currentTime) {
