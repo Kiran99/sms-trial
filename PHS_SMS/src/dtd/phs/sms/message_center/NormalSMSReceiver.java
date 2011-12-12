@@ -28,7 +28,8 @@ public class NormalSMSReceiver extends BroadcastReceiver {
 
 				@Override
 				public void run() {
-					final String from = Helpers.revertUsername2PhoneNumber( intent.getStringExtra(GoogleXMPPService.EXTRA_SENDER));
+					String username = intent.getStringExtra(GoogleXMPPService.EXTRA_SENDER);
+					final String from = Helpers.revertUsername2PhoneNumber(username);
 //					String id = intent.getStringExtra(GoogleXMPPService.EXTRA_MESSAGE_ID);
 					final String message = intent.getStringExtra(GoogleXMPPService.EXTRA_MESSAGE_BODY);
 					ContentValues values = new ContentValues();

@@ -18,7 +18,7 @@ public class SummariesAdapter extends BaseAdapter {
 
 
 	private static final int ITEM_LAYOUT = R.layout.inbox_item;
-	static final int STUB_AVATAR = R.drawable.icon;
+	static final int STUB_AVATAR = R.drawable.contact;
 	static Bitmap STUB_AVATAR_BITMAP = null;
 	
 	private SummariesList summaries;

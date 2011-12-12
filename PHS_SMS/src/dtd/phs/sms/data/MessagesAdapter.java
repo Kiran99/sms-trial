@@ -1,11 +1,14 @@
 package dtd.phs.sms.data;
 
 import android.content.Context;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RectShape;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import dtd.phs.sms.R;
+import dtd.phs.sms.data.entities.SMSItem;
 import dtd.phs.sms.data.entities.SMSList;
 import dtd.phs.sms.util.Helpers;
 
@@ -16,6 +19,9 @@ public class MessagesAdapter extends BaseAdapter {
 		public TextView tvMessage;
 
 	}
+
+	private static final int ME_COLOR = 0xee87ceeb;
+	private static final int FRIEND_COLOR = 0xeee0ffff;
 
 	private SMSList messages;
 	private Context context;
@@ -52,9 +58,22 @@ public class MessagesAdapter extends BaseAdapter {
 		} else {
 			holder = (Holder) v.getTag();
 		}
-		
-		holder.tvMessage.setText( messages.get(position).getBody());
+		displayMessage(position, holder);
 		return v;
+	}
+
+	private void displayMessage(int position, Holder holder) {
+		SMSItem smsItem = messages.get(position);
+		String body = smsItem.getBody();
+		long personId = smsItem.getPersonId();
+		if ( personId == 0 ) {
+			body = "Me: " + body;
+//			holder.tvMessage.setBackgroundColor(ME_COLOR);
+		} else {
+//			holder.tvMessage.setBackgroundColor(FRIEND_COLOR);
+			body = "Friend: " + body;
+		}
+		holder.tvMessage.setText(body);
 	}
 
 }

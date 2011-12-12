@@ -6,7 +6,11 @@
 	<ListView
 		android:id="@+id/list"
 		android:layout_width="fill_parent" 
-		android:layout_height="fill_parent" 
+		android:layout_height="fill_parent"
+		android:divider="#00112233"
+		android:dividerHeight="2dp"
+		android:fadingEdge="none"
+		android:cacheColorHint="#00000000" 
 	></ListView>    
 	<include
 		layout="@layout/waiting_frame"

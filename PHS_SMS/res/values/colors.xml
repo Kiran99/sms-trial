@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white_blur_border">#66ffffff</color>
+    <color name="message_color">#ff111111</color>
+</resources>

@@ -7,7 +7,9 @@ import android.net.Uri;
 import dtd.phs.sms.data.entities.MessageItem;
 import dtd.phs.sms.data.entities.SMSItem;
 import dtd.phs.sms.message_center.AndroidSMSSender.ResultCode;
+import dtd.phs.sms.util.Helpers;
 import dtd.phs.sms.util.Logger;
+import dtd.phs.sms.util.PreferenceHelpers;
 
 //TODO: All this must be called inside an service + new thread
 public class Postman 
@@ -57,6 +59,7 @@ INormalMessageSenderListener
 	private void saveSentMessage(MessageItem message) {
 		ContentValues values = new ContentValues();
 		values.put(SMSItem.ADDRESS, message.getNumber());
+		values.put(SMSItem.PERSON_ID,"0");
 		values.put(SMSItem.BODY, message.getContent());
 		context.getContentResolver().insert(Uri.parse("content://sms/inbox"), values );
 		broadcastMessageIsBeingSent();

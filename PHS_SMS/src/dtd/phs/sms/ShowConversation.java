@@ -268,6 +268,7 @@ implements IDataGetter, SendMessageListener
 				mess.setNumber(number);
 				mess.setContent(message);
 				mess.setId(""+System.currentTimeMillis());
+				etMessage.setText("");
 				postman.sendMessage(mess, ShowConversation.this, false);
 				
 			}

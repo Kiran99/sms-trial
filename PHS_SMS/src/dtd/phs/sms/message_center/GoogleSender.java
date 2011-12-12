@@ -25,8 +25,6 @@ public class GoogleSender implements ISMSSender {
 //		message.setId(""+currentTime);		
 		GoogleXMPPService.messageToSend = message;
 
-
-
 		//if the message cannot be sent ontime, it does mean that it cannot be sent ! 
 		// so, sometimes there will be duplicates (sent by I-SMS, but the reply comes too late
 		// and it will be sent by normal sms manager 

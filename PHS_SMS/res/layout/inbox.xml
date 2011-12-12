@@ -4,33 +4,45 @@
   android:orientation="vertical"
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
-  android:background="#00112233"
+  android:background="@drawable/inbox_top_bg"
   >
   <LinearLayout
   	android:layout_width="fill_parent"
   	android:layout_height="wrap_content"
   	android:orientation="horizontal"
+	android:background="@drawable/inbox_top_box"  	
   >
   	<ImageButton
   		android:id="@+id/btSearch"
-  		android:layout_width="wrap_content"
-  		android:layout_height="wrap_content"
-  		android:src="@drawable/icon"
-  		android:background="#00112233"
+  		android:layout_width="48dp"
+  		android:layout_height="48dp"
+  		android:src="@drawable/search"
+  		android:background="#00112233"  		
   	>
   	</ImageButton>
+  	<TextView
+  	    android:layout_width="0.5dp"
+  	    android:layout_height="fill_parent"
+  	    android:background="@color/white_blur_border"
+  	/>
   	<TextView
   		android:layout_width="100dp"
   		android:layout_weight="1"
   		android:layout_height="fill_parent"
   		android:text="@string/all_messages"
   		android:gravity="center"
+  		android:background="#00112233"
   	/>
+  	<TextView
+  	    android:layout_width="0.5dp"
+  	    android:layout_height="fill_parent"
+  	    android:background="@color/white_blur_border"
+  	/>  		
   	<ImageButton
   		android:id="@+id/btCompose"
-  		android:layout_width="wrap_content"
-  		android:layout_height="wrap_content"
-  		android:src="@drawable/icon"
+  		android:layout_width="48dp"
+  		android:layout_height="48dp"
+  		android:src="@drawable/pencil"
   		android:background="#00112233"
   	/>
   </LinearLayout>
@@ -38,6 +50,7 @@
   		android:id="@+id/main_frames"
 	  	android:layout_height="fill_parent"
 	  	android:layout_width="fill_parent"
+	  	android:background="@drawable/round_corners_bg"
   >
 	  <include 
 	  	layout="@layout/waiting_frame"
@@ -48,6 +61,10 @@
 	  	android:id="@+id/list"
 	  	android:layout_height="fill_parent"
 	  	android:layout_width="fill_parent" 
+	  	android:cacheColorHint="#00000000"
+	  	android:divider="#eeffffff"
+	  	android:dividerHeight="0.5dp"
+	  	android:fadingEdge="none"	  	
 	  />
   </FrameLayout>
 </LinearLayout>

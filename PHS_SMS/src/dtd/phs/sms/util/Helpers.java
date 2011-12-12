@@ -90,6 +90,7 @@ public class Helpers {
 	public static String revertUsername2PhoneNumber(String stringExtra) {
 		//TODO: later
 		String number = stringExtra.replace('p', '+');
+//		return number;
 		return number.substring(0,number.indexOf('@'));
 	}
 
