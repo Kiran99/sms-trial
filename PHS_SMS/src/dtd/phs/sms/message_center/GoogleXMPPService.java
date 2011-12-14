@@ -65,7 +65,13 @@ public class GoogleXMPPService extends Service {
 		super.onCreate();
 		waitingMessages = new HashMap<String, String>();
 		Logger.logInfo("GoogleXMPP service is created !");
-		createConnection();
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				createConnection();			
+			}
+		}).start();
+		
 	}
 
 	@Override
@@ -83,6 +89,7 @@ public class GoogleXMPPService extends Service {
 	}
 
 	private void createConnection() {
+		connection = null;
 		login();
 		if ( connection != null ) {
 			PacketFilter filter = new MessageTypeFilter(Message.Type.chat);
@@ -270,7 +277,7 @@ public class GoogleXMPPService extends Service {
 	}
 
 	public class WaitingThread extends Thread {
-		private static final long WAITING_FOR_REPLY_TIME = 1000;
+		private static final long WAITING_FOR_REPLY_TIME = 5000;
 		private String id;
 
 		public WaitingThread(long currentTime) {
