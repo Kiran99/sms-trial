@@ -98,7 +98,9 @@ INormalMessageSenderListener
 		if ( data instanceof MessageItem ) {
 			MessageItem mess = (MessageItem) data;
 			ResultCode errorCode = mess.getResultCode();
-			if ( errorCode == ResultCode.I_MESSAGE_TIME_OUT ) {
+			if ( 
+					errorCode == ResultCode.I_MESSAGE_TIME_OUT 
+					|| errorCode == ResultCode.FAILED ) {
 				if ( ! mess.isPingMessage() ) { 
 					tryToSendNormalMessage(mess);
 				} else {

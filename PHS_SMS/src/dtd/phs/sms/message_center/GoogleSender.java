@@ -45,13 +45,15 @@ public class GoogleSender implements ISMSSender {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			int errorCode = intent.getIntExtra(GoogleXMPPService.ERROR_CODE, GoogleXMPPService.UNKNOWN_ERROR);
-
+			Logger.logInfo("Failure intent received ");
 			//TODO: Unregister listener for message that's send OR not sent !
 			switch (errorCode) {
-			case GoogleXMPPService.CONNECTION_ERROR:
+			case GoogleXMPPService.CREATE_CONNECTION_ERROR:
+				Logger.logInfo("Creating connection to server error !");
 				message.setResultCode(ResultCode.I_CONNECTION_ERROR);
 				break;
 			case GoogleXMPPService.AUTHENTICATION_ERROR:
+				Logger.logInfo("Authentication failed !");
 				message.setResultCode(ResultCode.I_AUTHENTICATION_ERROR);
 				break;
 			case GoogleXMPPService.I_MESSAGE_TIME_OUT:
@@ -62,13 +64,31 @@ public class GoogleSender implements ISMSSender {
 					listener.onSendIMessageFailed(message);
 				}
 				break;
+			case GoogleXMPPService.NOT_CONNECTED_TO_SERVER:
+				Logger.logInfo("Connection to server is disturbed !");
+				if ( message.getID().equals(intent.getStringExtra(GoogleXMPPService.EXTRA_MESSAGE_ID)) ) {
+					Logger.logInfo("Connection disturb is published !");
+					message.setResultCode(ResultCode.FAILED);
+					listener.onSendIMessageFailed(message);
+				}
+				break;
 			case GoogleXMPPService.UNKNOWN_ERROR:
 				message.setResultCode(ResultCode.I_MESSAGE_UNKNOWN);
 				break;
 			}
-			context.unregisterReceiver(this);
-			if ( delReceiver != null )
-				context.unregisterReceiver(delReceiver);
+			try {
+				context.unregisterReceiver(this);
+			} catch (Exception e) {
+				Logger.logInfo("Receiver is already unregistered !");
+			}
+			if ( delReceiver != null ) {
+				try {
+					context.unregisterReceiver(delReceiver);
+				} 			catch (Exception e) {
+					Logger.logInfo("Receiver is already unregistered !");
+				}	
+			}
+
 		}
 
 		public void setDeliveredReceiver(DeliveredReceiver deliveredReceiver) {
@@ -88,7 +108,7 @@ public class GoogleSender implements ISMSSender {
 	public void send(final MessageItem message) {
 		Intent xmppServiceIntent = new Intent(context,GoogleXMPPService.class);
 		long currentTime = System.currentTimeMillis();
-//		message.setId(""+currentTime);		
+		//		message.setId(""+currentTime);		
 		GoogleXMPPService.messageToSend = message;
 
 		//if the message cannot be sent ontime, it does mean that it cannot be sent ! 
@@ -101,17 +121,17 @@ public class GoogleSender implements ISMSSender {
 		failureReceiver.setDeliveredReceiver(deliveredReceiver);
 		deliveredReceiver.setFailureReceiver(failureReceiver);
 		//THis is sender , not receiver
-//		context.registerReceiver(new BroadcastReceiver() {
-//
-//			@Override
-//			public void onReceive(Context context, Intent intent) {
-//				listener.onReceiveIMessage(getData(intent));
-//			}
-//
-//			private Object getData(Intent intent) {
-//				return null;
-//			}
-//		},new IntentFilter(GoogleXMPPService.I_MESSAGE_RECEIVED));
+		//		context.registerReceiver(new BroadcastReceiver() {
+		//
+		//			@Override
+		//			public void onReceive(Context context, Intent intent) {
+		//				listener.onReceiveIMessage(getData(intent));
+		//			}
+		//
+		//			private Object getData(Intent intent) {
+		//				return null;
+		//			}
+		//		},new IntentFilter(GoogleXMPPService.I_MESSAGE_RECEIVED));
 
 		context.startService(xmppServiceIntent);
 

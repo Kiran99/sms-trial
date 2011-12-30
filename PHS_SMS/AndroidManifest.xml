@@ -18,7 +18,7 @@
     
 
     <application
-        android:icon="@drawable/icon"
+        android:icon="@drawable/sms_icon"
         android:label="@string/app_name" >
         <activity
             android:label="@string/app_name"

@@ -1,8 +1,12 @@
 package dtd.phs.sms.message_center;
 
+import java.io.ObjectOutputStream.PutField;
 import java.util.HashMap;
 
+import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.ConnectionConfiguration;
+import org.jivesoftware.smack.ConnectionCreationListener;
+import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
@@ -13,6 +17,7 @@ import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.util.StringUtils;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -39,12 +44,14 @@ public class GoogleXMPPService extends Service {
 	public static final String I_MESSAGE_RECEIVED = "dtd.phs.sms.isms_received";
 	public static final String XMPP_FAILURE = "dtd.phs.sms.xmpp_failure";
 
-	public  static final int CONNECTION_ERROR = -1;
+	public  static final int CREATE_CONNECTION_ERROR = -1;
 	public static final int AUTHENTICATION_ERROR = -2;
 	public static final int I_MESSAGE_TIME_OUT = -3;
+	public static final int NOT_CONNECTED_TO_SERVER = -4;
 	public static final int UNKNOWN_ERROR = -99;
 
 	public static final String ERROR_CODE = "xmpp.error_code";
+
 
 
 
@@ -71,7 +78,7 @@ public class GoogleXMPPService extends Service {
 				createConnection();			
 			}
 		}).start();
-		
+
 	}
 
 	@Override
@@ -161,19 +168,24 @@ public class GoogleXMPPService extends Service {
 	}
 
 
-	private void sendMessage(String toName,String message) {
-		if ( message != null) {
-			Logger.logInfo("Message sending: to = [" + toName + "] -- content: " + message);
-			Message msg = new Message(toName, Message.Type.chat);
-			msg.setBody(message);
-			try {
-				connection.sendPacket(msg);
-			} catch (Exception e ) {
-				Logger.logException(e);
+	private void sendMessage(final String toName,final String message) {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				if ( message != null) {
+					Logger.logInfo("Message sending: to = [" + toName + "] -- content: " + message);
+					Message msg = new Message(toName, Message.Type.chat);
+					msg.setBody(message);
+					try {
+						connection.sendPacket(msg);
+					} catch (Exception e ) {
+						Logger.logException(e);
+					}
+				} else {
+					Logger.logInfo("Message to send is NULL");
+				}
 			}
-		} else {
-			Logger.logInfo("Message to send is NULL");
-		}
+		}).start();
 	}
 
 
@@ -207,16 +219,68 @@ public class GoogleXMPPService extends Service {
 		Logger.logInfo("Creating a connection ...");
 		ConnectionConfiguration connConfig =
 			new ConnectionConfiguration(HOST, Integer.parseInt(PORT), SERVICE);
+		
 		connection = new XMPPConnection(connConfig);
 
 		boolean connected = false;
 		if ( Helpers.isConnectedToInternet(getApplicationContext())) {
 			try {
 				connection.connect();
+				connection.addPacketSendingListener(new PacketListener() {
+					
+					@Override
+					public void processPacket(Packet arg0) {
+						// TODO Auto-generated method stub
+						
+					}
+				}, new PacketFilter() {
+					
+					@Override
+					public boolean accept(Packet arg0) {
+						// TODO Auto-generated method stub
+						return false;
+					}
+				});
+				
+				connection.addConnectionListener(new ConnectionListener() {
+					//TODO: should only have 1 listener ! Dont create them every time new connection is started ! 
+					
+					@Override
+					public void reconnectionSuccessful() {
+						Logger.logInfo("Reconnecting successful !");						
+					}
+					
+					@Override
+					public void reconnectionFailed(Exception arg0) {
+						Logger.logInfo("Reconnecting failed !");
+					}
+					
+					@Override
+					public void reconnectingIn(int arg0) {
+						Logger.logInfo("Reconnecting In !");
+					}
+					
+					@Override
+					public void connectionClosedOnError(Exception arg0) {
+						Logger.logInfo("Connection closed or ERROR !");
+					}
+					
+					@Override
+					public void connectionClosed() {
+						Logger.logInfo("Connection closed !");
+					}
+				});
+				XMPPConnection.addConnectionCreationListener(new ConnectionCreationListener() {
+					
+					@Override
+					public void connectionCreated(Connection arg0) {
+						Logger.logInfo("Connection created : user[" + arg0.getUser() + "]");
+					}
+				});
 				connected = true;
 			} catch (XMPPException exception) {			
 				Logger.logException(exception);
-				broadcastFailure(CONNECTION_ERROR);
+				broadcastFailure(CREATE_CONNECTION_ERROR,null);
 			}
 
 			if ( connected ) {
@@ -226,20 +290,26 @@ public class GoogleXMPPService extends Service {
 					Logger.logInfo("Connection is created successfully !");
 				} catch (XMPPException exception) {
 					Logger.logException(exception);
-					broadcastFailure(AUTHENTICATION_ERROR);
+					broadcastFailure(AUTHENTICATION_ERROR,null);
 				}
 			}
-			
+
 		} else {
 			Logger.logInfo("Not connected to Internet");
-			broadcastFailure(CONNECTION_ERROR);
+			broadcastFailure(CREATE_CONNECTION_ERROR,null);
 		}
 	}
 
-	private void broadcastFailure(int errorCode) {
+	private void broadcastFailure(int errorCode, Bundle extraBundle) {
 		Intent intent = new Intent();
 		intent.setAction(XMPP_FAILURE);
 		intent.putExtra(ERROR_CODE,errorCode);
+		if ( extraBundle != null ) {
+			for(String key : extraBundle.keySet()) {
+				intent.putExtra(key, extraBundle.getString(key));
+			}
+		}
+		getApplicationContext().sendBroadcast(intent);
 	}
 
 	private String getPassword() {
@@ -260,16 +330,25 @@ public class GoogleXMPPService extends Service {
 			String username = messageToSend.getNumber();
 			username = Helpers.generateUsernameFromPhoneNumber(username)+"@"+SERVICE;
 			Logger.logInfo("Message id to send:--" + messageToSend.getID()+"--");
-			waitingMessages.put(messageToSend.getID(), "");
-			sendMessage(
-					username,
-					""+ messageToSend.getID() + SEPERATOR + messageToSend.getContent());
-			//			Message msg = new Message(messageToSend.getNumber(), Message.Type.chat);
-			//			msg.setBody(""+ messageToSend.getId() + SEPERATOR + messageToSend.getContent());
+			if ( connection != null && connection.isConnected() ) {
+				Logger.logInfo("Connection is connected & the message is being sent !");
+				waitingMessages.put(messageToSend.getID(), "");
+				sendMessage(
+						username,
+						""+ messageToSend.getID() + SEPERATOR + messageToSend.getContent());
+				//			Message msg = new Message(messageToSend.getNumber(), Message.Type.chat);
+				//			msg.setBody(""+ messageToSend.getId() + SEPERATOR + messageToSend.getContent());
 
 
-			WaitingThread wt = new WaitingThread(Long.parseLong(messageToSend.getID()));
-			wt.start();
+				WaitingThread wt = new WaitingThread(Long.parseLong(messageToSend.getID()));
+				wt.start();
+			} else {
+				Logger.logInfo("Connection is failed !");
+				Bundle extraBundle = new Bundle();
+				extraBundle.putString(EXTRA_MESSAGE_ID,messageToSend.getID());
+				broadcastFailure(NOT_CONNECTED_TO_SERVER, extraBundle);
+				this.stopSelf();
+			}
 		} else {
 			Logger.logInfo("Message to send is NULL");
 		}
