@@ -27,6 +27,7 @@ public class SMSProvider {
 			if ( cursor.moveToFirst())  {
 				while (true) {
 					SMSItem item = new SMSItem( cursor );
+//					printOut(cursor);
 					list.add(item);
 					if ( ! cursor.moveToNext()) break;
 				}
@@ -39,6 +40,15 @@ public class SMSProvider {
 				cursor.close();
 		}
 	}
+
+//	private static void printOut(Cursor cursor) {
+//		String[] columnNames = cursor.getColumnNames();
+//		StringBuilder message = new StringBuilder();
+//		for(String col : columnNames) {
+//			String s = cursor.getString(cursor.getColumnIndex(col));
+//			message.append("["+ col +": "+ s+"]");
+//		}
+//	}
 
 	public static SMSList getMessagesForThread(int threadId, Context context) {
 		String sortField = SMSItem.DATE + " asc";
